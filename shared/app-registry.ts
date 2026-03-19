@@ -43,6 +43,41 @@ export const appRegistry: AppRegistryEntry[] = [
     ]
   },
   {
+    id: "system-rezerwacji",
+    name: "System Rezerwacji",
+    description: "Obsługa rezerwacji, planner i działania operacyjne wydarzeń.",
+    url: "https://system-rezerwacji.grdn.pl",
+    environment: "prod",
+    category: "operations",
+    sourcePath: "/home/ubuntu/Projects/system-rezerwacji/app",
+    enabled: true,
+    visibleInHome: true,
+    access: [
+      {
+        source: "client",
+        clientId: "system-rezerwacji-app",
+        anyRoles: ["admin", "manager", "reception", "catering", "restaurant", "viewer"]
+      }
+    ]
+  },
+  {
+    id: "rozliczenie-dnia",
+    name: "Rozliczenie Dnia",
+    description: "Dzienne rozliczenia operacyjne dla managera i kelnera.",
+    url: "https://rozliczenie-dnia.grdn.pl",
+    environment: "prod",
+    category: "operations",
+    sourcePath: "/home/ubuntu/Projects/rozliczenie-dnia-app",
+    enabled: true,
+    visibleInHome: true,
+    access: [
+      {
+        source: "realm",
+        anyRoles: ["admin", "kelner"]
+      }
+    ]
+  },
+  {
     id: "grello",
     name: "Grello",
     description: "Zadania i organizacja pracy operacyjnej.",

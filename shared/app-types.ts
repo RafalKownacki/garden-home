@@ -32,3 +32,18 @@ export type UserAccessProfile = {
   realmRoles: string[];
   clientRoles: Record<string, string[]>;
 };
+
+export type ScanConfidence = "low" | "medium" | "high";
+
+export type ScannedAppCandidate = {
+  sourcePath: string;
+  inferredId: string;
+  inferredName: string;
+  inferredUrl?: string;
+  inferredClientIds: string[];
+  inferredRoles: string[];
+  matchedRegistryId?: string;
+  isPublished: boolean;
+  confidence: ScanConfidence;
+  notes: string[];
+};

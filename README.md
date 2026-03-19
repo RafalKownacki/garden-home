@@ -16,6 +16,20 @@ Portal startowy dla użytkowników realm `garden`, pokazujący tylko produkcyjne
    - `npm run dev --workspace app`
    - `npm run dev --workspace api`
 
+## Skan projektów
+
+Home ma pomocniczy skaner kandydatów z `/home/ubuntu/Projects`.
+
+- CLI: `npm run scan:projects`
+- API: `GET /v1/scan/report` dla ról z `SCAN_REPORT_REALM_ROLES`
+
+Skan:
+
+- wykrywa frontendy `*-app` oraz zagnieżdżone `app/` w monorepo
+- próbuje odczytać hosty `*.grdn.pl`, `clientId` i wskazówki ról
+- porównuje wynik z `shared/app-registry.ts`
+- nie publikuje nic automatycznie do registry
+
 ## Registry aplikacji
 
 Wpisy trzymane są w `shared/app-registry.ts`.
@@ -26,3 +40,4 @@ Zasady:
 - aplikacja jest widoczna tylko gdy `visibleInHome=true`
 - aplikacja jest widoczna tylko dla `environment='prod'`
 - aplikacja bez `access` nie jest widoczna nikomu
+- skaner służy tylko do bootstrapu kandydatów, a nie do automatycznej publikacji

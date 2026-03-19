@@ -5,6 +5,7 @@ import { config } from "./config.js";
 import { registerAppsRoutes } from "./routes/apps.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerHealthRoute } from "./routes/health.js";
+import { registerScanRoutes } from "./routes/scan.js";
 
 const app = express();
 
@@ -20,6 +21,7 @@ registerHealthRoute(app);
 app.use(requireAuth);
 registerAuthRoutes(app);
 registerAppsRoutes(app);
+registerScanRoutes(app);
 
 app.listen(config.port, () => {
   console.log(`garden-home-api listening on :${config.port}`);
