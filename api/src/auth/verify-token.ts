@@ -58,7 +58,8 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     req.authClaims = claims;
     req.userProfile = buildUserAccessProfile(claims);
     next();
-  } catch {
+  } catch (err) {
+    console.log("[auth] INVALID_TOKEN for", req.method, req.path, String(err).slice(0, 80));
     res.status(401).json({ error: "INVALID_TOKEN" });
   }
 }

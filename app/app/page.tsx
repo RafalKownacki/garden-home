@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { AppsGrid } from "@/components/apps-grid";
 import { EmptyState } from "@/components/empty-state";
 import { Topbar } from "@/components/topbar";
@@ -11,8 +10,7 @@ import { appConfig } from "@/src/lib/config";
 import type { AppsResponse } from "@/src/types/api";
 
 export default function HomePage() {
-  const router = useRouter();
-  const { isReady, isAuthenticated, token, profile, logout } = useAuth();
+  const { isReady, isAuthenticated, token, profile, logout, login } = useAuth();
   const [appsResponse, setAppsResponse] = useState<AppsResponse>({ count: 0, apps: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +18,7 @@ export default function HomePage() {
   useEffect(() => {
     if (!isReady) return;
     if (!isAuthenticated || !token) {
-      router.replace("/login");
+      window.location.replace("/login");
       return;
     }
 
@@ -49,10 +47,29 @@ export default function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated, isReady, router, token]);
+  }, [isAuthenticated, isReady, token]);
 
-  if (!isReady || (!isAuthenticated && !error)) {
-    return <main className="flex min-h-screen items-center justify-center px-6 text-sm text-stone-500">Ładowanie Home…</main>;
+  if (!isReady || !isAuthenticated || !token) {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-6 py-10">
+        <section className="w-full max-w-xl rounded-[32px] border border-stone-200 bg-white p-10 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">Garden</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-stone-950">{appConfig.appName}</h1>
+          <p className="mt-4 max-w-lg text-base leading-7 text-stone-600">
+            Portal startowy pokazujący produkcyjne aplikacje dostępne dla zalogowanego użytkownika z realmu garden.
+          </p>
+          <div className="mt-8">
+            <button
+              type="button"
+              onClick={() => void login()}
+              className="rounded-full bg-stone-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-stone-800"
+            >
+              Zaloguj
+            </button>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   return (

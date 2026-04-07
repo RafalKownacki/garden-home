@@ -8,7 +8,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://employee.grdn.pl",
     environment: "prod",
     category: "operations",
-    sourcePath: "/home/ubuntu/Projects/employee/app",
+    sourcePath: "/home/ubuntu/Projects/hr-platform/apps/employee-web",
     enabled: true,
     visibleInHome: true,
     access: [
@@ -67,7 +67,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://rozliczenie-dnia.grdn.pl",
     environment: "prod",
     category: "operations",
-    sourcePath: "/home/ubuntu/Projects/rozliczenie-dnia-app",
+    sourcePath: "/home/ubuntu/Projects/rozliczenie-dnia/app",
     enabled: true,
     visibleInHome: true,
     access: [

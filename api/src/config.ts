@@ -28,8 +28,8 @@ function splitCsv(value: string): string[] {
 
 export const config = {
   rootDir,
-  port: envNumber("PORT", 18010),
-  corsOrigin: env("CORS_ORIGIN", "http://192.168.14.55:18000"),
+  port: envNumber("PORT", 19010),
+  corsOrigin: env("CORS_ORIGIN", "http://192.168.14.55:19000"),
   projectsRoot: env("PROJECTS_ROOT", "/home/ubuntu/Projects"),
   scanReportRealmRoles: splitCsv(env("SCAN_REPORT_REALM_ROLES", "developer,employee.developer")),
   keycloakIssuer: env("KEYCLOAK_ISSUER_URL", "https://auth.grdn.pl/realms/garden"),
@@ -38,5 +38,9 @@ export const config = {
     "https://auth.grdn.pl/realms/garden/protocol/openid-connect/certs"
   ),
   keycloakAudience: env("KEYCLOAK_AUDIENCE", "garden-home-app"),
-  authPublicPaths: splitCsv(env("AUTH_PUBLIC_PATHS", "GET /health"))
+  authPublicPaths: splitCsv(env("AUTH_PUBLIC_PATHS", "GET /health")),
+  keycloakAdminUrl: env("KEYCLOAK_ADMIN_URL", "https://auth.grdn.pl"),
+  keycloakRealm: env("KEYCLOAK_REALM", "garden"),
+  keycloakAdminUsername: env("KEYCLOAK_ADMIN_USERNAME", "admin"),
+  keycloakAdminPassword: env("KEYCLOAK_ADMIN_PASSWORD", "")
 };

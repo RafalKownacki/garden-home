@@ -101,35 +101,36 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (initStartedRef.current) return;
     initStartedRef.current = true;
+    const readyFallback = window.setTimeout(() => {
+      setIsReady(true);
+    }, 1500);
 
     const boot = async () => {
-      if (!appConfig.keycloakEnabled) {
-        setIsReady(true);
-        return;
-      }
-
-      if (!secureContext) {
-        const implicitToken = tryHandleImplicitCallback();
-        const storedToken = implicitToken || localStorage.getItem(STORAGE_KEY);
-        if (implicitToken) {
-          localStorage.setItem(STORAGE_KEY, implicitToken);
-        }
-        if (storedToken) {
-          setToken(storedToken);
-          try {
-            await loadProfile(storedToken);
-            await loadAppsWarmup(storedToken);
-          } catch {
-            localStorage.removeItem(STORAGE_KEY);
-            setToken(null);
-            setProfile(null);
-          }
-        }
-        setIsReady(true);
-        return;
-      }
-
       try {
+        if (!appConfig.keycloakEnabled) {
+          return;
+        }
+
+        if (!secureContext) {
+          const implicitToken = tryHandleImplicitCallback();
+          const storedToken = implicitToken || localStorage.getItem(STORAGE_KEY);
+          if (implicitToken) {
+            localStorage.setItem(STORAGE_KEY, implicitToken);
+          }
+          if (storedToken) {
+            setToken(storedToken);
+            try {
+              await loadProfile(storedToken);
+              await loadAppsWarmup(storedToken);
+            } catch {
+              localStorage.removeItem(STORAGE_KEY);
+              setToken(null);
+              setProfile(null);
+            }
+          }
+          return;
+        }
+
         const keycloak = getKeycloak();
         initPromiseRef.current = keycloak.init(buildInitOptions());
         const authenticated = await initPromiseRef.current;
@@ -141,14 +142,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
           await loadAppsWarmup(resolvedToken);
         }
       } catch {
+        localStorage.removeItem(STORAGE_KEY);
         setToken(null);
         setProfile(null);
       } finally {
+        window.clearTimeout(readyFallback);
         setIsReady(true);
       }
     };
 
     void boot();
+
+    return () => {
+      window.clearTimeout(readyFallback);
+    };
   }, [loadAppsWarmup, loadProfile, secureContext]);
 
   const value = useMemo<AuthContextValue>(
