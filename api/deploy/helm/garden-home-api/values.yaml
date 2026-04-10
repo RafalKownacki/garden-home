@@ -1,0 +1,45 @@
+image:
+  registry: localhost:32000
+  repository: garden-home-api
+  tag: v2026.04.10-1430
+  pullPolicy: IfNotPresent
+replicaCount: 1
+deploymentStrategyType: Recreate
+service:
+  type: ClusterIP
+  port: 19010
+ingress:
+  enabled: true
+  className: nginx
+  host: home-api.grdn.pl
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/proxy-buffering: 'on'
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 8k
+  tls:
+  - hosts:
+    - home-api.grdn.pl
+    secretName: keycloak-tls-grdn
+resources:
+  requests:
+    cpu: 15m
+    memory: 96Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: microk8s-hostpath
+env:
+  NODE_ENV: production
+  PORT: '19010'
+  CORS_ORIGIN: https://home.grdn.pl
+  KEYCLOAK_ISSUER_URL: https://auth.grdn.pl/realms/garden
+  KEYCLOAK_JWKS_URL: https://auth.grdn.pl/realms/garden/protocol/openid-connect/certs
+  KEYCLOAK_AUDIENCE: garden-home-app
+  AUTH_PUBLIC_PATHS: GET /health
+  KEYCLOAK_ADMIN_URL: https://auth.grdn.pl
+  KEYCLOAK_REALM: garden
+  KEYCLOAK_ADMIN_USERNAME: admin
+  SCAN_REPORT_REALM_ROLES: developer,employee.developer

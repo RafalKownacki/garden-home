@@ -9,32 +9,65 @@ type TopbarProps = {
   onLogout: () => void | Promise<void>;
 };
 
-export function Topbar({ appName, profile, onLogout }: TopbarProps) {
+function UserAvatar({ name }: { name: string }) {
+  const initials = name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+
   return (
-    <header className="flex items-center justify-between gap-4 rounded-[28px] border border-stone-200 bg-white/92 px-6 py-4 shadow-sm backdrop-blur">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">Garden</p>
-        <h1 className="text-2xl font-semibold text-stone-900">{appName}</h1>
+    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
+      {initials || "?"}
+    </div>
+  );
+}
+
+export function Topbar({ appName, profile, onLogout }: TopbarProps) {
+  const displayName = profile?.displayName || profile?.username || "Użytkownik";
+  const isAdmin = profile?.realmRoles.includes("admin") ?? false;
+
+  return (
+    <header className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface/80 px-5 py-3 backdrop-blur-sm">
+      <div className="flex items-center gap-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white">
+          G
+        </div>
+        <div>
+          <h1 className="text-base font-semibold text-foreground leading-tight">{appName}</h1>
+          <p className="text-xs text-muted leading-tight">Portal aplikacji</p>
+        </div>
       </div>
-      <div className="flex items-center gap-4">
-        {profile?.realmRoles.includes("admin") && (
+
+      <div className="flex items-center gap-3">
+        <Link
+          href="/status"
+          className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted transition hover:border-accent hover:text-accent"
+        >
+          Status
+        </Link>
+        {isAdmin && (
           <Link
             href="/admin/matrix"
-            className="rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50"
+            className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted transition hover:border-accent hover:text-accent"
           >
             Macierz dostępów
           </Link>
         )}
-        <div className="text-right">
-          <p className="text-sm font-medium text-stone-900">{profile?.displayName || profile?.username || "Użytkownik"}</p>
-          <p className="text-xs text-stone-500">
-            {profile ? (profile.realmRoles.includes("admin") ? "Admin" : "Użytkownik") : "Brak sesji"}
-          </p>
+        <div className="flex items-center gap-2.5">
+          <UserAvatar name={displayName} />
+          <div className="hidden sm:block text-right">
+            <p className="text-sm font-medium text-foreground leading-tight">{displayName}</p>
+            <p className="text-xs text-muted leading-tight">
+              {isAdmin ? "Administrator" : "Użytkownik"}
+            </p>
+          </div>
         </div>
         <button
           type="button"
           onClick={() => void onLogout()}
-          className="rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50"
+          className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted transition hover:border-red-300 hover:text-red-500 dark:hover:border-red-800 dark:hover:text-red-400"
+          aria-label="Wyloguj"
         >
           Wyloguj
         </button>
