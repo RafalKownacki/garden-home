@@ -7,9 +7,9 @@ type AppsGridProps = {
 
 export function AppsGrid({ apps }: AppsGridProps) {
   return (
-    <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-      {apps.map((app) => (
-        <AppCard key={app.id} app={app} />
+    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {apps.map((app, i) => (
+        <AppCard key={app.id} app={app} index={i} />
       ))}
     </section>
   );

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: garden-home-app
+  labels:
+    app: garden-home-app
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: garden-home-app
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}

@@ -1,20 +1,10 @@
-import * as registryModule from "../../../shared/app-registry.js";
-import type { AppRegistryEntry, HomeAppCard, UserAccessProfile } from "../../../shared/app-types.js";
+import type { HomeAppCard, UserAccessProfile } from "../../../shared/app-types.js";
 import { hasAccess } from "./access-evaluator.js";
+import { loadRegistry } from "./registry-store.js";
 
-const appRegistry: AppRegistryEntry[] =
-  "appRegistry" in registryModule && Array.isArray(registryModule.appRegistry)
-    ? registryModule.appRegistry
-    : "default" in registryModule &&
-        registryModule.default &&
-        typeof registryModule.default === "object" &&
-        "appRegistry" in registryModule.default &&
-        Array.isArray(registryModule.default.appRegistry)
-      ? registryModule.default.appRegistry
-      : [];
-
-export function listAppsForUser(user: UserAccessProfile): HomeAppCard[] {
-  return appRegistry
+export async function listAppsForUser(user: UserAccessProfile): Promise<HomeAppCard[]> {
+  const registry = await loadRegistry();
+  return registry
     .filter((entry) => hasAccess(entry, user))
     .map((entry) => ({
       id: entry.id,

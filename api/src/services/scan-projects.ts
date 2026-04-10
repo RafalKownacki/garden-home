@@ -1,18 +1,7 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
-import * as registryModule from "../../../shared/app-registry.js";
 import type { AppRegistryEntry, ScanConfidence, ScannedAppCandidate } from "../../../shared/app-types.js";
-
-const appRegistry: AppRegistryEntry[] =
-  "appRegistry" in registryModule && Array.isArray(registryModule.appRegistry)
-    ? registryModule.appRegistry
-    : "default" in registryModule &&
-        registryModule.default &&
-        typeof registryModule.default === "object" &&
-        "appRegistry" in registryModule.default &&
-        Array.isArray(registryModule.default.appRegistry)
-      ? registryModule.default.appRegistry
-      : [];
+import { loadRegistry } from "./registry-store.js";
 
 const SKIP_DIRS = new Set([".git", ".next", "coverage", "dist", "build", "node_modules"]);
 const TEXT_EXTENSIONS = new Set([".cjs", ".cts", ".env", ".js", ".json", ".jsx", ".md", ".mjs", ".mts", ".ts", ".tsx", ".txt", ".yaml", ".yml"]);
@@ -311,6 +300,7 @@ function buildNotes(params: {
 }
 
 export async function scanProjects(projectsRoot: string): Promise<ScannedAppCandidate[]> {
+  const appRegistry = await loadRegistry();
   const candidateDirs = await collectCandidateDirs(projectsRoot);
   const currentRepoRoot = path.resolve(projectsRoot, "garden-home");
   const candidates: ScannedAppCandidate[] = [];
@@ -328,7 +318,7 @@ export async function scanProjects(projectsRoot: string): Promise<ScannedAppCand
     const roles = extractRoles(files, inferredId);
     const inferredUrl = choosePrimaryUrl(urls, inferredId) ?? `https://${inferredId}.grdn.pl`;
     const registryEntry = appRegistry.find(
-      (entry) =>
+      (entry: AppRegistryEntry) =>
         entry.sourcePath === candidatePath ||
         entry.id === inferredId ||
         entry.url === inferredUrl

@@ -28,4 +28,22 @@ export function registerScanRoutes(app: Express) {
 
     res.json(response);
   });
+
+  // Unregistered app candidates — admin only
+  app.get("/v1/scan/candidates", async (req, res) => {
+    if (!req.userProfile?.realmRoles.includes("admin")) {
+      res.status(403).json({ error: "FORBIDDEN" });
+      return;
+    }
+
+    const all = await scanProjects(config.projectsRoot);
+    const unregistered = all.filter((c) => !c.matchedRegistryId);
+
+    res.json({
+      generatedAt: new Date().toISOString(),
+      total: all.length,
+      unregisteredCount: unregistered.length,
+      candidates: unregistered
+    });
+  });
 }

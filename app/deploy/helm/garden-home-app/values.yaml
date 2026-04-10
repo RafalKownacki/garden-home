@@ -1,0 +1,32 @@
+image:
+  registry: localhost:32000
+  repository: garden-home-app
+  tag: v2026.04.09-0919
+  pullPolicy: IfNotPresent
+replicaCount: 1
+deploymentStrategyType: Recreate
+service:
+  type: ClusterIP
+  port: 3000
+ingress:
+  enabled: true
+  className: nginx
+  host: home.grdn.pl
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/proxy-buffering: 'on'
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 8k
+  tls:
+  - hosts:
+    - home.grdn.pl
+    secretName: keycloak-tls-grdn
+resources:
+  requests:
+    cpu: 5m
+    memory: 64Mi
+  limits:
+    cpu: 150m
+    memory: 192Mi
+env:
+  NODE_ENV: production
+  PORT: '3000'

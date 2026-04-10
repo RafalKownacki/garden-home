@@ -1,10 +1,13 @@
 export function EmptyState() {
   return (
-    <section className="rounded-[28px] border border-dashed border-stone-300 bg-white px-8 py-12 text-center shadow-sm">
-      <h2 className="text-xl font-semibold text-stone-900">Brak przypisanych aplikacji</h2>
-      <p className="mt-3 text-sm leading-6 text-stone-600">
-        Nie masz obecnie przypisanych aplikacji produkcyjnych. Skontaktuj się z administratorem, jeśli ten widok
-        powinien zawierać więcej pozycji.
+    <section className="animate-card-in flex flex-col items-center rounded-2xl border border-dashed border-border bg-surface px-8 py-16 text-center">
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-strong text-3xl">
+        🏡
+      </div>
+      <h2 className="mt-5 text-lg font-semibold text-foreground">Brak przypisanych aplikacji</h2>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted">
+        Nie masz obecnie przypisanych aplikacji produkcyjnych. Skontaktuj się z administratorem, jeśli powinny tu
+        być widoczne pozycje.
       </p>
     </section>
   );

@@ -1,0 +1,31 @@
+FROM node:24-bookworm-slim AS build
+WORKDIR /workspace
+ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_API_BASE_URL
+ARG NEXT_PUBLIC_KEYCLOAK_ENABLED
+ARG NEXT_PUBLIC_KEYCLOAK_URL
+ARG NEXT_PUBLIC_KEYCLOAK_REALM
+ARG NEXT_PUBLIC_KEYCLOAK_CLIENT_ID
+ARG NEXT_PUBLIC_APP_NAME
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
+    NEXT_PUBLIC_KEYCLOAK_ENABLED=$NEXT_PUBLIC_KEYCLOAK_ENABLED \
+    NEXT_PUBLIC_KEYCLOAK_URL=$NEXT_PUBLIC_KEYCLOAK_URL \
+    NEXT_PUBLIC_KEYCLOAK_REALM=$NEXT_PUBLIC_KEYCLOAK_REALM \
+    NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=$NEXT_PUBLIC_KEYCLOAK_CLIENT_ID \
+    NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
+COPY package.json package-lock.json ./
+COPY app/package.json ./app/
+COPY shared ./shared
+RUN npm ci --workspace app
+COPY app ./app
+RUN cd app && npm run build
+
+FROM node:24-bookworm-slim
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=build /workspace/app/public ./public
+COPY --from=build /workspace/app/.next/standalone/app ./
+COPY --from=build /workspace/app/.next/static ./.next/static
+EXPOSE 3000
+CMD ["node", "server.js"]

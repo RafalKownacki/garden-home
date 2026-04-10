@@ -3,11 +3,20 @@
 import { useEffect, useState } from "react";
 import { AppsGrid } from "@/components/apps-grid";
 import { EmptyState } from "@/components/empty-state";
+import { SkeletonGrid } from "@/components/skeleton-grid";
 import { Topbar } from "@/components/topbar";
 import { useAuth } from "@/src/auth/use-auth";
 import { apiGet } from "@/src/lib/api";
 import { appConfig } from "@/src/lib/config";
 import type { AppsResponse } from "@/src/types/api";
+
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 6) return "Dobrej nocy";
+  if (h < 12) return "Dzień dobry";
+  if (h < 18) return "Miłego popołudnia";
+  return "Dobry wieczór";
+}
 
 export default function HomePage() {
   const { isReady, isAuthenticated, token, profile, logout, login } = useAuth();
@@ -28,70 +37,72 @@ export default function HomePage() {
       setError(null);
       try {
         const data = await apiGet<AppsResponse>("/v1/apps", token);
-        if (!cancelled) {
-          setAppsResponse(data);
-        }
+        if (!cancelled) setAppsResponse(data);
       } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Nie udało się pobrać aplikacji.");
-        }
+        if (!cancelled) setError(err instanceof Error ? err.message : "Nie udało się pobrać aplikacji.");
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     };
-
     void load();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [isAuthenticated, isReady, token]);
 
+  /* ---- Not ready / not authenticated ---- */
   if (!isReady || !isAuthenticated || !token) {
     return (
       <main className="flex min-h-screen items-center justify-center px-6 py-10">
-        <section className="w-full max-w-xl rounded-[32px] border border-stone-200 bg-white p-10 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">Garden</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-stone-950">{appConfig.appName}</h1>
-          <p className="mt-4 max-w-lg text-base leading-7 text-stone-600">
-            Portal startowy pokazujący produkcyjne aplikacje dostępne dla zalogowanego użytkownika z realmu garden.
-          </p>
-          <div className="mt-8">
-            <button
-              type="button"
-              onClick={() => void login()}
-              className="rounded-full bg-stone-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-stone-800"
-            >
-              Zaloguj
-            </button>
-          </div>
+        <section className="w-full max-w-md rounded-2xl border border-border bg-surface p-10 text-center">
+          <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-lg font-bold text-white">G</div>
+          <h1 className="text-2xl font-semibold text-foreground">{appConfig.appName}</h1>
+          <p className="mt-2 text-sm text-muted">Portal aplikacji Garden</p>
+          <button
+            type="button"
+            onClick={() => void login()}
+            className="mt-8 w-full rounded-xl bg-foreground px-5 py-3 text-sm font-medium text-background transition hover:opacity-80"
+          >
+            Zaloguj się
+          </button>
         </section>
       </main>
     );
   }
 
+  /* ---- Authenticated ---- */
+  const firstName = (profile?.displayName || profile?.username || "").split(/\s/)[0];
+
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fef3c7,_transparent_32%),linear-gradient(180deg,_#f8fafc_0%,_#f7f5f2_100%)] px-6 py-8 md:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6">
+    <main className="ambient-bg min-h-screen px-4 py-6 sm:px-6 md:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-5">
         <Topbar appName={appConfig.appName} profile={profile} onLogout={logout} />
-        <section className="rounded-[28px] border border-stone-200 bg-white/90 px-6 py-6 shadow-sm backdrop-blur">
-          <p className="text-sm font-medium text-stone-500">Portal startowy</p>
-          <h2 className="mt-2 font-[family-name:var(--font-fraunces)] text-3xl font-semibold text-stone-950">
-            Masz dostęp do {appsResponse.count} aplikacji
+
+        {/* Greeting + count */}
+        <section className="px-1">
+          <h2 className="font-[family-name:var(--font-fraunces)] text-2xl font-semibold text-foreground sm:text-3xl">
+            {getGreeting()}{firstName ? `, ${firstName}` : ""}
           </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-stone-600">
-            Home pokazuje tylko produkcyjne aplikacje przypisane do Twojego konta w realmie garden.
+          <p className="mt-1 text-sm text-muted">
+            {loading
+              ? "Ładowanie aplikacji…"
+              : error
+                ? "Wystąpił problem z pobieraniem aplikacji"
+                : `${appsResponse.count} ${appsResponse.count === 1 ? "aplikacja dostępna" : appsResponse.count < 5 ? "aplikacje dostępne" : "aplikacji dostępnych"}`}
           </p>
         </section>
+
+        {/* Content */}
         {loading ? (
-          <section className="rounded-[28px] border border-stone-200 bg-white px-6 py-10 text-sm text-stone-500 shadow-sm">
-            Pobieranie aplikacji…
-          </section>
+          <SkeletonGrid />
         ) : error ? (
-          <section className="rounded-[28px] border border-rose-200 bg-rose-50 px-6 py-10 text-sm text-rose-700 shadow-sm">
-            {error}
+          <section className="animate-card-in rounded-2xl border border-red-200 bg-red-50 px-6 py-8 text-center dark:border-red-900 dark:bg-red-950/30">
+            <p className="text-sm font-medium text-red-700 dark:text-red-400">{error}</p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-3 text-sm font-medium text-red-600 underline underline-offset-2 hover:text-red-500 dark:text-red-400"
+            >
+              Spróbuj ponownie
+            </button>
           </section>
         ) : appsResponse.apps.length > 0 ? (
           <AppsGrid apps={appsResponse.apps} />
