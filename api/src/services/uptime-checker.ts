@@ -1,8 +1,12 @@
+import { Agent } from "undici";
 import { loadRegistry } from "./registry-store.js";
 import { insertCheck, deleteOlderThan, type UptimeStatus } from "./uptime-store.js";
 
 const REQUEST_TIMEOUT_MS = 10_000;
 const RETENTION_DAYS = 30;
+
+// Monitoring checks reachability, not cert chain — accept self-signed.
+const insecureDispatcher = new Agent({ connect: { rejectUnauthorized: false } });
 
 function classify(httpCode: number): UptimeStatus {
   if (httpCode >= 200 && httpCode < 400) return "up";
@@ -20,7 +24,9 @@ async function checkOne(appId: string, url: string): Promise<void> {
       method: "GET",
       redirect: "manual",
       signal: controller.signal,
-      headers: { "User-Agent": "garden-home-uptime/1.0" }
+      headers: { "User-Agent": "garden-home-uptime/1.0" },
+      // @ts-expect-error — undici dispatcher is valid at runtime for global fetch on Node 24
+      dispatcher: insecureDispatcher
     });
     const latency = Date.now() - startedAt;
     insertCheck({
