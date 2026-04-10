@@ -1,4 +1,4 @@
-import { Agent } from "undici";
+import { Agent, fetch as undiciFetch } from "undici";
 import { loadRegistry } from "./registry-store.js";
 import { insertCheck, deleteOlderThan, type UptimeStatus } from "./uptime-store.js";
 
@@ -20,12 +20,11 @@ async function checkOne(appId: string, url: string): Promise<void> {
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
-    const response = await fetch(url, {
+    const response = await undiciFetch(url, {
       method: "GET",
       redirect: "manual",
       signal: controller.signal,
       headers: { "User-Agent": "garden-home-uptime/1.0" },
-      // @ts-expect-error — undici dispatcher is valid at runtime for global fetch on Node 24
       dispatcher: insecureDispatcher
     });
     const latency = Date.now() - startedAt;
