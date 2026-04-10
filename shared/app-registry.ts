@@ -289,8 +289,7 @@ export const appRegistry: AppRegistryEntry[] = [
     enabled: true,
     visibleInHome: true,
     access: [
-      { source: "realm", anyRoles: ["admin"] },
-      { source: "client", clientId: "marketingowiec-app", anyRoles: ["admin", "marketing"] }
+      { source: "authenticated" }
     ]
   },
   {

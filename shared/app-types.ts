@@ -1,8 +1,7 @@
-export type AppAccessRule = {
-  source: "client" | "realm";
-  clientId?: string;
-  anyRoles: string[];
-};
+export type AppAccessRule =
+  | { source: "realm"; anyRoles: string[] }
+  | { source: "client"; clientId: string; anyRoles: string[] }
+  | { source: "authenticated" };
 
 export type AppRegistryEntry = {
   id: string;
