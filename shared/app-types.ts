@@ -3,6 +3,8 @@ export type AppAccessRule =
   | { source: "client"; clientId: string; anyRoles: string[] }
   | { source: "authenticated" };
 
+export type AccessSnapshotSubjectMode = "explicit_users" | "all_authenticated";
+
 export type AppAccessSyncConfig = {
   mode: "pull_snapshot_v1";
   url: string;

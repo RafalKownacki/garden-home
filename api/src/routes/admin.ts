@@ -1,31 +1,17 @@
 import type { Express, Request, Response } from "express";
-import { hasAccess } from "../services/access-evaluator.js";
-import { getFreshMembershipRows } from "../services/access-snapshot-store.js";
+import {
+  createSnapshotAccessContext,
+  resolveAppAccessForUser,
+  triggerPendingSnapshotRefreshes,
+} from "../services/access-resolver.js";
 import {
   describeAccessSyncHealth,
   getAccessSyncState,
-  getAccessSyncStateMap,
   refreshAccessSnapshotForAppId,
-  triggerAccessRefreshInBackground,
 } from "../services/access-sync-service.js";
 import { listUsersWithRoles } from "../services/keycloak-admin.js";
 import * as store from "../services/registry-store.js";
-
-const SERVICE_ACCOUNT_PATTERNS = [
-  /^service-account-/,
-  /mcp$/,
-  /-smoke/,
-  /^srsmoke$/,
-  /-diag$/,
-  /-sync$/,
-  /^rbac\./,
-  /-test$/,
-  /^szr_.*_test$/,
-];
-
-function isServiceAccount(username: string): boolean {
-  return SERVICE_ACCOUNT_PATTERNS.some((pattern) => pattern.test(username));
-}
+import { isServiceAccountUsername } from "../services/service-account-utils.js";
 
 function requireAdmin(req: Request, res: Response): boolean {
   if (!req.userProfile?.realmRoles.includes("admin")) {
@@ -49,25 +35,16 @@ export function registerAdminRoutes(app: Express) {
           entry.enabled && entry.visibleInHome && entry.environment === "prod"
       );
       const allUsers = await listUsersWithRoles();
-      const syncStateMap = getAccessSyncStateMap();
-
-      const snapshotApps = visibleApps.filter((entry) => entry.accessSync?.mode === "pull_snapshot_v1");
-      const membershipRows = getFreshMembershipRows(
-        snapshotApps.map((entry) => entry.id),
-        allUsers.map((user) => user.userId),
-        now
-      );
-      const membership = new Set(membershipRows.map((row) => `${row.app_id}::${row.user_sub}`));
-
-      for (const appEntry of snapshotApps) {
-        const syncHealth = describeAccessSyncHealth(appEntry, syncStateMap.get(appEntry.id), now);
-        if (syncHealth !== "fresh") {
-          triggerAccessRefreshInBackground(appEntry.id);
-        }
-      }
+      const accessContext = createSnapshotAccessContext({
+        entries: visibleApps,
+        userSubs: allUsers.map((user) => user.userId),
+        now,
+      });
+      const syncStateMap = accessContext.syncStateMap;
+      triggerPendingSnapshotRefreshes(accessContext);
 
       const rows = allUsers.map((user) => {
-        const service = isServiceAccount(user.username);
+        const service = isServiceAccountUsername(user.username);
         return {
           userId: user.userId,
           username: user.username,
@@ -75,12 +52,10 @@ export function registerAdminRoutes(app: Express) {
           isAdmin: user.realmRoles.includes("admin"),
           isService: service,
           access: Object.fromEntries(
-            visibleApps.map((entry) => {
-              if (entry.accessSync?.mode === "pull_snapshot_v1") {
-                return [entry.id, membership.has(`${entry.id}::${user.userId}`)];
-              }
-              return [entry.id, hasAccess(entry, user)];
-            })
+            visibleApps.map((entry) => [
+              entry.id,
+              resolveAppAccessForUser(entry, user, accessContext).hasAccess,
+            ])
           ),
         };
       });

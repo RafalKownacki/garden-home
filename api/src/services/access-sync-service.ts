@@ -1,5 +1,9 @@
 import { fetch as undiciFetch } from "undici";
-import type { AppRegistryEntry, AppAccessSyncConfig } from "../../../shared/app-types.js";
+import type {
+  AccessSnapshotSubjectMode,
+  AppRegistryEntry,
+  AppAccessSyncConfig,
+} from "../../../shared/app-types.js";
 import { config } from "../config.js";
 import {
   getAccessSnapshotState,
@@ -14,6 +18,7 @@ import { getById, isStale, loadRegistry } from "./registry-store.js";
 type PullSnapshotPayload = {
   appId: string;
   generatedAt: string;
+  subjectMode: AccessSnapshotSubjectMode;
   userSubs: string[];
 };
 
@@ -58,22 +63,38 @@ function normalizeSnapshotPayload(payload: unknown, appId: string): PullSnapshot
     throw new Error("INVALID_GENERATED_AT");
   }
 
-  if (!Array.isArray(body.userSubs)) {
+  if (
+    body.subjectMode !== undefined &&
+    body.subjectMode !== "explicit_users" &&
+    body.subjectMode !== "all_authenticated"
+  ) {
+    throw new Error("INVALID_SUBJECT_MODE");
+  }
+
+  const subjectMode =
+    body.subjectMode === "all_authenticated" ? "all_authenticated" : "explicit_users";
+
+  if (subjectMode === "explicit_users" && !Array.isArray(body.userSubs)) {
     throw new Error("INVALID_USER_SUBS");
   }
 
-  const userSubs = Array.from(
-    new Set(
-      body.userSubs
-        .filter((item): item is string => typeof item === "string")
-        .map((item) => item.trim())
-        .filter(Boolean)
-    )
-  );
+  const rawUserSubs = Array.isArray(body.userSubs) ? body.userSubs : [];
+  const userSubs =
+    subjectMode === "all_authenticated"
+      ? []
+      : Array.from(
+          new Set(
+            rawUserSubs
+              .filter((item): item is string => typeof item === "string")
+              .map((item) => item.trim())
+              .filter(Boolean)
+          )
+        );
 
   return {
     appId,
     generatedAt: body.generatedAt,
+    subjectMode,
     userSubs,
   };
 }
@@ -130,12 +151,13 @@ async function refreshAppInternal(app: AppRegistryEntry): Promise<AccessSyncResu
       generatedAt: payload.generatedAt,
       fetchedAt,
       expiresAt: fetchedAt + config.accessSyncTtlMs,
+      subjectMode: payload.subjectMode,
       userSubs: payload.userSubs,
     });
     return {
       appId: app.id,
       status: "ok",
-      userCount: payload.userSubs.length,
+      userCount: payload.subjectMode === "all_authenticated" ? undefined : payload.userSubs.length,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

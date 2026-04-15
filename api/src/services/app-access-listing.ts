@@ -1,9 +1,10 @@
 import type { AppRegistryEntry } from "../../../shared/app-types.js";
-import { hasAccess } from "./access-evaluator.js";
-import { listUsersWithAccessToApp } from "./access-snapshot-store.js";
 import { listUsersWithRoles, type KcUserWithRoles } from "./keycloak-admin.js";
-
-export type AppAccessSource = "snapshot" | "legacy";
+import {
+  createSnapshotAccessContext,
+  resolveAppAccessForUser,
+  type AppAccessSource,
+} from "./access-resolver.js";
 
 export type AppAccessEntry = {
   userId: string;
@@ -27,19 +28,14 @@ export async function listUsersWithAppAccess(
   entry: AppRegistryEntry
 ): Promise<{ source: AppAccessSource; users: AppAccessEntry[] }> {
   const allUsers = await listUsersWithRoles();
-  const userById = new Map(allUsers.map((user) => [user.userId, user]));
-
-  if (entry.accessSync?.mode === "pull_snapshot_v1") {
-    const subs = listUsersWithAccessToApp(entry.id, Date.now());
-    const users = subs
-      .map((sub) => userById.get(sub))
-      .filter((user): user is KcUserWithRoles => Boolean(user))
-      .map((user) => toEntry(user, "snapshot"));
-    return { source: "snapshot", users };
-  }
+  const context = createSnapshotAccessContext({
+    entries: [entry],
+    userSubs: allUsers.map((user) => user.userId),
+  });
 
   const users = allUsers
-    .filter((user) => hasAccess(entry, user))
-    .map((user) => toEntry(user, "legacy"));
-  return { source: "legacy", users };
+    .filter((user) => resolveAppAccessForUser(entry, user, context).hasAccess)
+    .map((user) => toEntry(user, entry.accessSync?.mode === "pull_snapshot_v1" ? "snapshot" : "legacy"));
+  const source: AppAccessSource = entry.accessSync?.mode === "pull_snapshot_v1" ? "snapshot" : "legacy";
+  return { source, users };
 }
