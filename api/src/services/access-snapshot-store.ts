@@ -137,6 +137,13 @@ const appIdsForUserStmt = db.prepare(`
   WHERE m.user_sub = ? AND s.expires_at > ?
 `);
 
+const usersForAppStmt = db.prepare(`
+  SELECT m.user_sub
+  FROM access_snapshot_membership m
+  JOIN access_snapshot_state s ON s.app_id = m.app_id
+  WHERE m.app_id = ? AND s.expires_at > ?
+`);
+
 export function replaceAccessSnapshot(params: {
   appId: string;
   generatedAt: string;
@@ -178,6 +185,11 @@ export function listAccessSnapshotStates(): Map<string, AccessSnapshotState> {
 export function listAccessibleAppIdsForUser(userSub: string, now: number): string[] {
   const rows = appIdsForUserStmt.all(userSub, now) as Array<{ app_id: string }>;
   return rows.map((row) => row.app_id);
+}
+
+export function listUsersWithAccessToApp(appId: string, now: number): string[] {
+  const rows = usersForAppStmt.all(appId, now) as Array<{ user_sub: string }>;
+  return rows.map((row) => row.user_sub);
 }
 
 export function getFreshMembershipRows(

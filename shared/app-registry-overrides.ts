@@ -1,4 +1,4 @@
-import type { AppRegistryOverride } from "./app-types";
+import type { AppRegistryOverride } from "./app-types.js";
 
 export const appRegistryOverrides: AppRegistryOverride[] = [
   { id: "employee", sourcePath: "/home/ubuntu/Projects/hr-platform/apps/employee-web" },

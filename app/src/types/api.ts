@@ -46,6 +46,22 @@ export type MatrixResponse = {
   hiddenServiceAccounts: number;
 };
 
+export type AppAccessUser = {
+  userId: string;
+  username: string;
+  displayName: string | null;
+  email: string | null;
+  source: "snapshot" | "legacy";
+};
+
+export type AppAccessResponse = {
+  appId: string;
+  name: string;
+  source: "snapshot" | "legacy";
+  count: number;
+  users: AppAccessUser[];
+};
+
 export type UptimeWindow = "24h" | "7d" | "30d";
 
 export type UptimeBucketState = "up" | "down" | "partial" | "unknown";

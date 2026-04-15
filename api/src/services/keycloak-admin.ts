@@ -3,6 +3,7 @@ import { config } from "../config.js";
 type KcUser = {
   id: string;
   username: string;
+  email?: string;
   firstName?: string;
   lastName?: string;
   enabled: boolean;
@@ -35,6 +36,7 @@ async function getAdminToken(): Promise<string> {
 export type KcUserWithRoles = {
   userId: string;
   username: string;
+  email: string | null;
   displayName: string | null;
   realmRoles: string[];
   clientRoles: Record<string, string[]>;
@@ -67,6 +69,7 @@ export async function listUsersWithRoles(): Promise<KcUserWithRoles[]> {
       return {
         userId: user.id,
         username: user.username,
+        email: user.email ?? null,
         displayName,
         realmRoles,
         clientRoles

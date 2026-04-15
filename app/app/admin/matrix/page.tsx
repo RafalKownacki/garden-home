@@ -64,7 +64,7 @@ export default function MatrixPage() {
 
   useEffect(() => {
     if (!isReady) return;
-    if (!isAuthenticated || !token) { router.replace("/login"); return; }
+    if (!isAuthenticated) { router.replace("/login"); return; }
     if (!isAdmin) { router.replace("/"); return; }
 
     let cancelled = false;

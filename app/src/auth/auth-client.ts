@@ -24,53 +24,33 @@ export function isSecureBrowserContext(): boolean {
   return window.isSecureContext;
 }
 
-export function randomState(): string {
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+export function buildBrowserProxyUrl(path: string): string {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `/api${normalizedPath}`;
 }
 
-export function buildAuthorizeUrl(forcePrompt = false): string {
-  const state = randomState();
-  sessionStorage.setItem("garden_home_oidc_state", state);
-  const params = new URLSearchParams({
-    client_id: appConfig.keycloakClientId,
-    redirect_uri: `${window.location.origin}/`,
-    response_type: "token",
-    response_mode: "fragment",
-    scope: "openid profile email",
-    state
-  });
+function currentReturnTo(): string {
+  if (typeof window === "undefined") return "/";
+  const url = new URL(window.location.href);
+  url.searchParams.delete("authError");
+  const value = `${url.pathname}${url.search}`;
+  if (value.startsWith("/api/")) return "/";
+  return value || "/";
+}
 
+export function buildBackendLoginUrl(forcePrompt = false): string {
+  const params = new URLSearchParams({
+    returnTo: currentReturnTo()
+  });
   if (forcePrompt) {
-    params.set("prompt", "login");
-    params.set("max_age", "0");
+    params.set("force", "1");
   }
-
-  return `${appConfig.keycloakUrl}/realms/${encodeURIComponent(appConfig.keycloakRealm)}/protocol/openid-connect/auth?${params.toString()}`;
+  return `${buildBrowserProxyUrl("/v1/auth/login")}?${params.toString()}`;
 }
 
-export function buildLogoutUrl(): string {
+export function buildBackendLogoutUrl(): string {
   const params = new URLSearchParams({
-    client_id: appConfig.keycloakClientId,
-    post_logout_redirect_uri: `${window.location.origin}/login`
+    returnTo: "/login"
   });
-
-  return `${appConfig.keycloakUrl}/realms/${encodeURIComponent(appConfig.keycloakRealm)}/protocol/openid-connect/logout?${params.toString()}`;
-}
-
-export function tryHandleImplicitCallback(): string | null {
-  if (typeof window === "undefined") return null;
-  const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
-  if (!hash) return null;
-
-  const params = new URLSearchParams(hash);
-  const token = params.get("access_token");
-  const state = params.get("state");
-  const expectedState = sessionStorage.getItem("garden_home_oidc_state");
-  if (!token || !state || !expectedState || state !== expectedState) {
-    return null;
-  }
-
-  sessionStorage.removeItem("garden_home_oidc_state");
-  window.history.replaceState({}, document.title, `${window.location.origin}${window.location.pathname}${window.location.search}`);
-  return token;
+  return `${buildBrowserProxyUrl("/v1/auth/logout")}?${params.toString()}`;
 }

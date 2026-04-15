@@ -40,6 +40,9 @@ export const config = {
     "https://auth.grdn.pl/realms/garden/protocol/openid-connect/certs"
   ),
   keycloakAudience: env("KEYCLOAK_AUDIENCE", "garden-home-app"),
+  keycloakClientId: env("KEYCLOAK_CLIENT_ID", env("KEYCLOAK_AUDIENCE", "garden-home-app")),
+  keycloakClientSecret: env("KEYCLOAK_CLIENT_SECRET", ""),
+  keycloakRequiredRealmRoles: splitCsv(env("KEYCLOAK_REQUIRED_REALM_ROLES", "")),
   authPublicPaths: splitCsv(env("AUTH_PUBLIC_PATHS", "GET /health")),
   keycloakAdminUrl: env("KEYCLOAK_ADMIN_URL", "https://auth.grdn.pl"),
   keycloakRealm: env("KEYCLOAK_REALM", "garden"),

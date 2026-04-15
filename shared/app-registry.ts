@@ -1,4 +1,4 @@
-import type { AppManifest } from "./app-types";
+import type { AppManifest } from "./app-types.js";
 
 export const appRegistry: AppManifest[] = [
   // ── Operations ─────────────────────────────────────────────

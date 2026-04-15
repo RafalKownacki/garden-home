@@ -26,7 +26,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!isReady) return;
-    if (!isAuthenticated || !token) {
+    if (!isAuthenticated) {
       window.location.replace("/login");
       return;
     }
@@ -49,7 +49,7 @@ export default function HomePage() {
   }, [isAuthenticated, isReady, token]);
 
   /* ---- Not ready / not authenticated ---- */
-  if (!isReady || !isAuthenticated || !token) {
+  if (!isReady || !isAuthenticated) {
     return (
       <main className="flex min-h-screen items-center justify-center px-6 py-10">
         <section className="w-full max-w-md rounded-2xl border border-border bg-surface p-10 text-center">

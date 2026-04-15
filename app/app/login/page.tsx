@@ -2,12 +2,22 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/src/auth/use-auth";
 import { appConfig } from "@/src/lib/config";
 
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  forbidden: "To konto nie ma wymaganych uprawnień do Home.",
+  access_denied: "Logowanie zostało anulowane w Keycloak.",
+  login_failed: "Nie udało się dokończyć logowania przez Keycloak."
+};
+
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isReady, isAuthenticated, login } = useAuth();
+  const authError = searchParams.get("authError");
+  const authErrorMessage = authError ? AUTH_ERROR_MESSAGES[authError] || "Wystąpił błąd logowania." : null;
 
   useEffect(() => {
     if (isReady && isAuthenticated) {
@@ -30,6 +40,12 @@ export default function LoginPage() {
           Centralny portal aplikacji Garden.<br />
           Zaloguj się, aby zobaczyć swoje aplikacje.
         </p>
+
+        {authErrorMessage ? (
+          <p className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {authErrorMessage}
+          </p>
+        ) : null}
 
         <button
           type="button"

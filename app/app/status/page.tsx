@@ -106,7 +106,7 @@ export default function StatusPage() {
 
   useEffect(() => {
     if (!isReady) return;
-    if (!isAuthenticated || !token) {
+    if (!isAuthenticated) {
       router.replace("/login");
       return;
     }

@@ -1,11 +1,30 @@
 import { appConfig } from "./config";
 
-export async function apiGet<T>(path: string, token: string): Promise<T> {
-  const response = await fetch(`${appConfig.apiBaseUrl}${path}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    cache: "no-store"
+function resolveApiUrl(path: string): string {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${appConfig.apiBaseUrl}${normalizedPath}`;
+}
+
+function shouldIncludeCredentials(url: string): boolean {
+  if (typeof window === "undefined") return url.startsWith("/");
+  try {
+    return new URL(url, window.location.origin).origin === window.location.origin;
+  } catch {
+    return url.startsWith("/");
+  }
+}
+
+export async function apiGet<T>(path: string, token?: string | null): Promise<T> {
+  const url = resolveApiUrl(path);
+  const headers = new Headers();
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const response = await fetch(url, {
+    headers,
+    cache: "no-store",
+    ...(shouldIncludeCredentials(url) ? { credentials: "include" as const } : {})
   });
 
   if (!response.ok) {
