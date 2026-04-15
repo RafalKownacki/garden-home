@@ -10,7 +10,9 @@ function resolveApiBase(raw?: string): string {
       if (!path || path === "/" || path === "/api") return fallback;
       if (path.startsWith("/api/")) return path;
     }
-    if (!url.pathname || url.pathname === "/") url.pathname = "/api";
+    if (!url.pathname || url.pathname === "/") {
+      return url.origin;
+    }
     return url.toString();
   } catch {
     return raw.startsWith("/") ? raw : `/${raw}`;
