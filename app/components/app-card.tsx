@@ -54,7 +54,7 @@ export function AppCard({ app, index }: AppCardProps) {
 
   return (
     <article
-      className={`card-glow animate-card-in group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-surface p-5 ${isDown ? "opacity-60 grayscale" : ""}`}
+      className={`card-glow animate-card-in group relative z-0 flex flex-col justify-between overflow-visible rounded-2xl border border-border bg-surface p-5 transition-[z-index] hover:z-20 focus-within:z-20 ${isDown ? "opacity-60 grayscale" : ""}`}
       style={{ animationDelay: `${index * 80}ms` }}
     >
       {/* Accent top bar */}
@@ -184,7 +184,7 @@ function AccessPeek({ appId, appName, token }: { appId: string; appName: string;
 
       {open && (
         <div
-          className="absolute right-0 top-full z-20 mt-2 w-72 rounded-xl border border-border bg-surface-strong p-3 text-left shadow-lg"
+          className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-border bg-surface-strong p-3 text-left shadow-lg"
           onMouseEnter={cancelClose}
           onMouseLeave={scheduleClose}
         >
