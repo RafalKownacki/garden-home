@@ -50,7 +50,7 @@ export default function MatrixPage() {
             </div>
             <div>
               <h1 className="text-base font-semibold text-foreground leading-tight">Macierz dostępów</h1>
-              <p className="text-xs text-muted leading-tight">Panel administracyjny</p>
+              <p className="text-xs text-muted leading-tight">Read-only — apki same deklarują dostęp przy starcie</p>
             </div>
           </div>
           <button
@@ -114,7 +114,28 @@ export default function MatrixPage() {
                   </th>
                   {matrix.apps.map((app) => (
                     <th key={app.id} className="px-4 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-muted whitespace-nowrap">
-                      {app.name}
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span>{app.name}</span>
+                        {app.isStale ? (
+                          <span
+                            className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold normal-case text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                            title={
+                              app.lastRegisteredAt
+                                ? `Ostatnia rejestracja: ${new Date(app.lastRegisteredAt).toLocaleString()}`
+                                : "Brak rejestracji"
+                            }
+                          >
+                            stale
+                          </span>
+                        ) : app.lastRegisteredAt ? (
+                          <span
+                            className="text-[9px] font-normal normal-case text-muted/60"
+                            title={`Ostatnia rejestracja: ${new Date(app.lastRegisteredAt).toLocaleString()}`}
+                          >
+                            {new Date(app.lastRegisteredAt).toLocaleDateString()}
+                          </span>
+                        ) : null}
+                      </div>
                     </th>
                   ))}
                 </tr>

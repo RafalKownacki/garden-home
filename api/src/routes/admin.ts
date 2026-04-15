@@ -1,5 +1,4 @@
 import type { Express, Request, Response } from "express";
-import type { AppRegistryEntry } from "../../../shared/app-types.js";
 import { hasAccess } from "../services/access-evaluator.js";
 import { listUsersWithRoles } from "../services/keycloak-admin.js";
 import * as store from "../services/registry-store.js";
@@ -60,8 +59,14 @@ export function registerAdminRoutes(app: Express) {
 
       const filteredRows = includeService ? rows : rows.filter((r) => !r.isService);
 
+      const now = Date.now();
       res.json({
-        apps: visibleApps.map((a) => ({ id: a.id, name: a.name })),
+        apps: visibleApps.map((a) => ({
+          id: a.id,
+          name: a.name,
+          lastRegisteredAt: a.lastRegisteredAt ?? null,
+          isStale: store.isStale(a, now),
+        })),
         rows: filteredRows,
         totalUsers: allUsers.length,
         hiddenServiceAccounts: rows.filter((r) => r.isService).length,
@@ -86,33 +91,17 @@ export function registerAdminRoutes(app: Express) {
     res.json(entry);
   });
 
-  app.put("/v1/admin/registry/:id", async (req, res) => {
-    if (!requireAdmin(req, res)) return;
-    const body = req.body as Partial<AppRegistryEntry>;
-    if (!body.name || !body.url) {
-      res.status(400).json({ error: "MISSING_FIELDS", required: ["name", "url"] });
-      return;
-    }
-    const entry: AppRegistryEntry = {
-      id: req.params.id,
-      name: body.name,
-      description: body.description ?? "",
-      url: body.url,
-      environment: "prod",
-      category: body.category,
-      sourcePath: body.sourcePath,
-      enabled: body.enabled ?? true,
-      visibleInHome: body.visibleInHome ?? true,
-      access: body.access ?? [{ source: "realm", anyRoles: ["admin"] }],
-    };
-    const { created } = await store.upsert(entry);
-    res.status(created ? 201 : 200).json(entry);
-  });
-
-  app.delete("/v1/admin/registry/:id", async (req, res) => {
-    if (!requireAdmin(req, res)) return;
-    const removed = await store.remove(req.params.id);
-    if (!removed) { res.status(404).json({ error: "NOT_FOUND" }); return; }
-    res.status(204).end();
-  });
+  // Registry is read-only — apps self-register via POST /v1/registry/register
+  const readOnlyHandler = (_req: Request, res: Response): void => {
+    res
+      .status(405)
+      .setHeader("Allow", "GET")
+      .json({
+        error: "REGISTRY_READ_ONLY",
+        message:
+          "Registry is read-only. Apps declare their access locally and self-register via POST /v1/registry/register.",
+      });
+  };
+  app.put("/v1/admin/registry/:id", readOnlyHandler);
+  app.delete("/v1/admin/registry/:id", readOnlyHandler);
 }

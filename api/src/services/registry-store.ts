@@ -30,11 +30,26 @@ export async function loadRegistry(): Promise<AppRegistryEntry[]> {
 
   try {
     const raw = await readFile(REGISTRY_FILE, "utf8");
-    cache = JSON.parse(raw) as AppRegistryEntry[];
+    const parsed = JSON.parse(raw) as AppRegistryEntry[];
+    // Backfill lastRegisteredAt for entries persisted before self-registration
+    // was introduced — ensures they survive the stale filter until they re-register.
+    const now = new Date().toISOString();
+    let dirty = false;
+    for (const entry of parsed) {
+      if (!entry.lastRegisteredAt) {
+        entry.lastRegisteredAt = now;
+        dirty = true;
+      }
+    }
+    cache = parsed;
+    if (dirty) await saveRegistry(cache);
     return cache;
   } catch {
-    // File doesn't exist — seed from static registry
-    cache = [...seedRegistry];
+    // File doesn't exist — seed from static registry.
+    // Seeded entries get a fresh lastRegisteredAt so they survive the stale filter
+    // until the satellite apps start self-registering (migration Phase B).
+    const now = new Date().toISOString();
+    cache = seedRegistry.map((e) => ({ ...e, lastRegisteredAt: e.lastRegisteredAt ?? now }));
     await saveRegistry(cache);
     return cache;
   }
@@ -66,6 +81,15 @@ export async function upsert(entry: AppRegistryEntry): Promise<{ created: boolea
   all.push(entry);
   await saveRegistry(all);
   return { created: true };
+}
+
+const STALE_MAX_AGE_MS = 25 * 60 * 60 * 1000; // 25h
+
+export function isStale(entry: AppRegistryEntry, now: number = Date.now()): boolean {
+  if (!entry.lastRegisteredAt) return true;
+  const registeredAt = Date.parse(entry.lastRegisteredAt);
+  if (!Number.isFinite(registeredAt)) return true;
+  return now - registeredAt > STALE_MAX_AGE_MS;
 }
 
 export async function remove(id: string): Promise<boolean> {

@@ -64,6 +64,23 @@ export function getChecksInRange(startMs: number, endMs: number): UptimePoint[] 
   return rangeStmt.all(startMs, endMs) as UptimePoint[];
 }
 
+const latestPerAppStmt = db.prepare(`
+  SELECT app_id, status, checked_at
+  FROM uptime_checks
+  WHERE id IN (
+    SELECT MAX(id) FROM uptime_checks GROUP BY app_id
+  )
+`);
+
+type LatestRow = { app_id: string; status: UptimeStatus; checked_at: number };
+
+export function getLatestStatusPerApp(): Map<string, UptimeStatus> {
+  const rows = latestPerAppStmt.all() as LatestRow[];
+  const map = new Map<string, UptimeStatus>();
+  for (const row of rows) map.set(row.app_id, row.status);
+  return map;
+}
+
 const deleteOldStmt = db.prepare(`DELETE FROM uptime_checks WHERE checked_at < ?`);
 
 export function deleteOlderThan(cutoffMs: number): number {

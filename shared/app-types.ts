@@ -14,6 +14,18 @@ export type AppRegistryEntry = {
   enabled: boolean;
   visibleInHome: boolean;
   access: AppAccessRule[];
+  lastRegisteredAt?: string;
+};
+
+export type AppManifest = {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  environment: "prod";
+  category?: string;
+  sourcePath?: string;
+  access: AppAccessRule[];
 };
 
 export type HomeAppCard = {
@@ -22,6 +34,7 @@ export type HomeAppCard = {
   description: string;
   url: string;
   category?: string;
+  uptimeStatus?: "up" | "down" | "unknown";
 };
 
 export type UserAccessProfile = {

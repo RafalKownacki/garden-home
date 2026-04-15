@@ -42,5 +42,6 @@ export const config = {
   keycloakAdminUrl: env("KEYCLOAK_ADMIN_URL", "https://auth.grdn.pl"),
   keycloakRealm: env("KEYCLOAK_REALM", "garden"),
   keycloakAdminUsername: env("KEYCLOAK_ADMIN_USERNAME", "admin"),
-  keycloakAdminPassword: env("KEYCLOAK_ADMIN_PASSWORD", "")
+  keycloakAdminPassword: env("KEYCLOAK_ADMIN_PASSWORD", ""),
+  registrationKey: env("GARDEN_REGISTRY_KEY", "")
 };

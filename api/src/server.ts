@@ -6,6 +6,7 @@ import { registerAdminRoutes } from "./routes/admin.js";
 import { registerAppsRoutes } from "./routes/apps.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerHealthRoute } from "./routes/health.js";
+import { registerRegistrationRoutes } from "./routes/register.js";
 import { registerScanRoutes } from "./routes/scan.js";
 import { registerUptimeRoutes } from "./routes/uptime.js";
 import { startUptimeScheduler } from "./services/uptime-scheduler.js";
@@ -21,6 +22,7 @@ app.use(
 app.use(express.json());
 
 registerHealthRoute(app);
+registerRegistrationRoutes(app);
 app.use(requireAuth);
 registerAuthRoutes(app);
 registerAppsRoutes(app);

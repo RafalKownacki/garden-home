@@ -26,7 +26,7 @@ const APP_THEMES: Record<string, { icon: string; gradient: string; accent: strin
   // Narzędzia
   grello:                { icon: "📌", gradient: "from-rose-500/10 to-rose-600/5",      accent: "bg-rose-500" },
   marketingowiec:        { icon: "📣", gradient: "from-pink-500/10 to-pink-600/5",      accent: "bg-pink-500" },
-  vault:                 { icon: "🗄️", gradient: "from-gray-500/10 to-gray-600/5",     accent: "bg-gray-500" },
+  assets:                { icon: "🗄️", gradient: "from-gray-500/10 to-gray-600/5",     accent: "bg-gray-500" },
   chat:                  { icon: "💬", gradient: "from-purple-500/10 to-purple-600/5",   accent: "bg-purple-500" },
   // Infrastruktura
   metersapp:             { icon: "⚡", gradient: "from-yellow-400/10 to-yellow-500/5",   accent: "bg-yellow-400" },
@@ -42,26 +42,37 @@ type AppCardProps = {
 
 export function AppCard({ app, index }: AppCardProps) {
   const theme = APP_THEMES[app.id] ?? DEFAULT_THEME;
+  const isDown = app.uptimeStatus === "down";
 
   return (
     <article
-      className={`card-glow animate-card-in group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-surface p-5`}
+      className={`card-glow animate-card-in group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-surface p-5 ${isDown ? "opacity-60 grayscale" : ""}`}
       style={{ animationDelay: `${index * 80}ms` }}
     >
       {/* Accent top bar */}
-      <div className={`absolute inset-x-0 top-0 h-1 ${theme.accent} opacity-60 transition-opacity group-hover:opacity-100`} />
+      <div className={`absolute inset-x-0 top-0 h-1 ${isDown ? "bg-red-500" : theme.accent} opacity-60 transition-opacity group-hover:opacity-100`} />
 
       {/* Subtle gradient background */}
       <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${theme.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`} />
 
       <div className="relative space-y-3">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-2">
           <span className="text-2xl" role="img" aria-hidden="true">{theme.icon}</span>
-          {app.category && (
-            <span className="rounded-md bg-surface-strong px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted">
-              {app.category}
-            </span>
-          )}
+          <div className="flex items-center gap-1.5">
+            {isDown && (
+              <span
+                className="rounded-md bg-red-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                title="Aplikacja niedostępna — ostatni healthcheck zakończył się niepowodzeniem"
+              >
+                ● Niedostępna
+              </span>
+            )}
+            {app.category && (
+              <span className="rounded-md bg-surface-strong px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted">
+                {app.category}
+              </span>
+            )}
+          </div>
         </div>
         <h2 className="text-lg font-semibold text-foreground">{app.name}</h2>
         <p className="text-sm leading-relaxed text-muted">{app.description}</p>

@@ -4,6 +4,7 @@ export type HomeAppCard = {
   description: string;
   url: string;
   category?: string;
+  uptimeStatus?: "up" | "down" | "unknown";
 };
 
 export type AppsResponse = {
@@ -11,7 +12,12 @@ export type AppsResponse = {
   apps: HomeAppCard[];
 };
 
-export type MatrixApp = { id: string; name: string };
+export type MatrixApp = {
+  id: string;
+  name: string;
+  lastRegisteredAt?: string | null;
+  isStale?: boolean;
+};
 
 export type MatrixRow = {
   userId: string;
