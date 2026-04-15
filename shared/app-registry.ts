@@ -307,13 +307,13 @@ export const appRegistry: AppRegistryEntry[] = [
     ]
   },
   {
-    id: "vault",
-    name: "Vault",
+    id: "assets",
+    name: "Assets",
     description: "Centralne repozytorium zdjęć i plików dla GRDN.",
-    url: "https://vault.grdn.pl",
+    url: "https://assets.grdn.pl",
     environment: "prod",
     category: "narzędzia",
-    sourcePath: "/home/ubuntu/Projects/vault/app",
+    sourcePath: "/home/ubuntu/Projects/assets/app",
     enabled: true,
     visibleInHome: true,
     access: [
