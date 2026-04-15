@@ -38,6 +38,7 @@ env:
   KEYCLOAK_ISSUER_URL: https://auth.grdn.pl/realms/garden
   KEYCLOAK_JWKS_URL: https://auth.grdn.pl/realms/garden/protocol/openid-connect/certs
   KEYCLOAK_AUDIENCE: garden-home-app
+  OIDC_STATE_SECRET: garden-home-oidc-state-v1
   AUTH_PUBLIC_PATHS: GET /health
   KEYCLOAK_ADMIN_URL: https://auth.grdn.pl
   KEYCLOAK_REALM: garden
