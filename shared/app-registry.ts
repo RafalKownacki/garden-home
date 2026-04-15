@@ -262,6 +262,20 @@ export const appRegistry: AppRegistryEntry[] = [
       { source: "realm", anyRoles: ["admin", "fincost-admin"] }
     ]
   },
+  {
+    id: "beo-finanse",
+    name: "BEO Finanse",
+    description: "Panel właściciela: zaliczki, przelewy, rozliczenia imprez (satelita BEO).",
+    url: "https://beo-finanse.grdn.pl",
+    environment: "prod",
+    category: "finanse",
+    sourcePath: "/home/ubuntu/Projects/beo-finanse-app",
+    enabled: true,
+    visibleInHome: true,
+    access: [
+      { source: "realm", anyRoles: ["admin"] }
+    ]
+  },
 
   // ── Narzędzia & Organizacja ────────────────────────────────
   {
