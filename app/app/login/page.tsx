@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/src/auth/use-auth";
 import { appConfig } from "@/src/lib/config";
 
@@ -12,7 +11,7 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
   login_failed: "Nie udało się dokończyć logowania przez Keycloak."
 };
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isReady, isAuthenticated, login } = useAuth();
@@ -60,5 +59,13 @@ export default function LoginPage() {
         </p>
       </section>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
   );
 }
