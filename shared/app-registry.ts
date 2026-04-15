@@ -1,6 +1,6 @@
-import type { AppRegistryEntry } from "./app-types";
+import type { AppManifest } from "./app-types";
 
-export const appRegistry: AppRegistryEntry[] = [
+export const appRegistry: AppManifest[] = [
   // ── Operations ─────────────────────────────────────────────
   {
     id: "employee",
@@ -9,12 +9,20 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://employee.grdn.pl",
     environment: "prod",
     category: "kadry",
-    sourcePath: "/home/ubuntu/Projects/hr-platform/apps/employee-web",
-    enabled: true,
-    visibleInHome: true,
     access: [
-      { source: "realm", anyRoles: ["admin", "employee.superadmin", "employee.admin", "employee.manager", "employee.accounting", "employee.viewer", "employee.developer"] }
-    ]
+      {
+        source: "realm",
+        anyRoles: [
+          "admin",
+          "employee.superadmin",
+          "employee.admin",
+          "employee.manager",
+          "employee.accounting",
+          "employee.viewer",
+          "employee.developer",
+        ],
+      },
+    ],
   },
   {
     id: "lista-plac",
@@ -23,11 +31,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://lista-plac.grdn.pl",
     environment: "prod",
     category: "kadry",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "lista-plac-access", "employee.accounting"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "lista-plac-access", "employee.accounting"] }],
   },
   {
     id: "personnel-notes",
@@ -36,12 +40,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://personnel-notes.grdn.pl",
     environment: "prod",
     category: "kadry",
-    sourcePath: "/home/ubuntu/Projects/personnel-notes-app",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "personnel-owner", "personnel-hr", "personnel-manager"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "personnel-owner", "personnel-hr", "personnel-manager"] }],
   },
   {
     id: "rekrutacja",
@@ -50,12 +49,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://rekrutacja.grdn.pl",
     environment: "prod",
     category: "kadry",
-    sourcePath: "/home/ubuntu/Projects/rekrutacja",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "personnel-owner", "personnel-hr"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "personnel-owner", "personnel-hr"] }],
   },
 
   // ── Rezerwacje & Eventy ────────────────────────────────────
@@ -66,13 +60,14 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://system-rezerwacji.grdn.pl",
     environment: "prod",
     category: "rezerwacje",
-    sourcePath: "/home/ubuntu/Projects/beo/app",
-    enabled: true,
-    visibleInHome: true,
     access: [
       { source: "realm", anyRoles: ["admin"] },
-      { source: "client", clientId: "system-rezerwacji-app", anyRoles: ["admin", "manager", "reception", "catering", "restaurant", "viewer"] }
-    ]
+      {
+        source: "client",
+        clientId: "system-rezerwacji-app",
+        anyRoles: ["admin", "manager", "reception", "catering", "restaurant", "viewer"],
+      },
+    ],
   },
   {
     id: "rezerwacje-oaza",
@@ -81,12 +76,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://rezerwacje-oaza.grdn.pl",
     environment: "prod",
     category: "rezerwacje",
-    sourcePath: "/home/ubuntu/Projects/rezerwacje-oaza",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "manager", "kelner"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "manager", "kelner"] }],
   },
   {
     id: "rezerwacje-restauracja",
@@ -95,12 +85,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://rezerwacje-restauracja.grdn.pl",
     environment: "prod",
     category: "rezerwacje",
-    sourcePath: "/home/ubuntu/Projects/rezerwacje-restauracja",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "manager", "kelner"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "manager", "kelner"] }],
   },
   {
     id: "pos-hotelapp",
@@ -109,12 +94,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://pos-hotelapp.grdn.pl",
     environment: "prod",
     category: "rezerwacje",
-    sourcePath: "/home/ubuntu/Projects/pos-hotelapp",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "manager"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "manager"] }],
   },
 
   // ── Restauracja & Kuchnia ──────────────────────────────────
@@ -125,12 +105,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://rozliczenie-dnia.grdn.pl",
     environment: "prod",
     category: "restauracja",
-    sourcePath: "/home/ubuntu/Projects/rozliczenie-dnia/app",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "kelner"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "kelner"] }],
   },
   {
     id: "rozliczenie-dnia-oaza",
@@ -139,11 +114,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://rozliczenie-dnia-oaza.grdn.pl",
     environment: "prod",
     category: "restauracja",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "kelner"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "kelner"] }],
   },
   {
     id: "strefa-kelnera",
@@ -152,13 +123,14 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://strefa-kelnera.grdn.pl",
     environment: "prod",
     category: "restauracja",
-    sourcePath: "/home/ubuntu/Projects/strefa-kelnera-app",
-    enabled: true,
-    visibleInHome: true,
     access: [
       { source: "realm", anyRoles: ["admin", "manager", "kelner"] },
-      { source: "client", clientId: "strefa-kelnera-app", anyRoles: ["superadmin", "admin", "manager", "kelner"] }
-    ]
+      {
+        source: "client",
+        clientId: "strefa-kelnera-app",
+        anyRoles: ["superadmin", "admin", "manager", "kelner"],
+      },
+    ],
   },
   {
     id: "recipebook",
@@ -167,12 +139,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://recipebook.grdn.pl",
     environment: "prod",
     category: "restauracja",
-    sourcePath: "/home/ubuntu/Projects/recipebook/app",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "manager"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "manager"] }],
   },
   {
     id: "magazyn",
@@ -181,13 +148,14 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://magazyn.grdn.pl",
     environment: "prod",
     category: "restauracja",
-    sourcePath: "/home/ubuntu/Projects/magazyn/app",
-    enabled: true,
-    visibleInHome: true,
     access: [
       { source: "realm", anyRoles: ["admin", "manager"] },
-      { source: "client", clientId: "magazyn-app", anyRoles: ["admin", "kierownik", "magazyn", "pracownik"] }
-    ]
+      {
+        source: "client",
+        clientId: "magazyn-app",
+        anyRoles: ["admin", "kierownik", "magazyn", "pracownik"],
+      },
+    ],
   },
   {
     id: "zakupy",
@@ -196,12 +164,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://zakupy.grdn.pl",
     environment: "prod",
     category: "restauracja",
-    sourcePath: "/home/ubuntu/Projects/zakupy",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "manager"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "manager"] }],
   },
   {
     id: "haccp-panel",
@@ -210,12 +173,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://haccp-panel.grdn.pl",
     environment: "prod",
     category: "restauracja",
-    sourcePath: "/home/ubuntu/Projects/haccp-panel/app",
-    enabled: false,
-    visibleInHome: false,
-    access: [
-      { source: "realm", anyRoles: ["admin", "haccp-editor", "haccp-reviewer"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "haccp-editor", "haccp-reviewer"] }],
   },
 
   // ── Finanse ────────────────────────────────────────────────
@@ -226,12 +184,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://fin.grdn.pl",
     environment: "prod",
     category: "finanse",
-    sourcePath: "/home/ubuntu/Projects/FinCostApp/frontend",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "fincost-admin"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "fincost-admin"] }],
   },
   {
     id: "przelewy",
@@ -240,13 +193,10 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://przelewy.grdn.pl",
     environment: "prod",
     category: "finanse",
-    sourcePath: "/home/ubuntu/Projects/przelewy-app",
-    enabled: true,
-    visibleInHome: true,
     access: [
       { source: "realm", anyRoles: ["admin"] },
-      { source: "client", clientId: "przelewy-app", anyRoles: ["admin", "manager", "viewer"] }
-    ]
+      { source: "client", clientId: "przelewy-app", anyRoles: ["admin", "manager", "viewer"] },
+    ],
   },
   {
     id: "ksef",
@@ -255,12 +205,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://ksef.grdn.pl",
     environment: "prod",
     category: "finanse",
-    sourcePath: "/home/ubuntu/Projects/ksef-explorer",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "fincost-admin"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "fincost-admin"] }],
   },
   {
     id: "beo-finanse",
@@ -269,12 +214,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://beo-finanse.grdn.pl",
     environment: "prod",
     category: "finanse",
-    sourcePath: "/home/ubuntu/Projects/beo-finanse-app",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin"] }],
   },
 
   // ── Narzędzia & Organizacja ────────────────────────────────
@@ -285,12 +225,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://grello.grdn.pl",
     environment: "prod",
     category: "narzędzia",
-    sourcePath: "/home/ubuntu/Projects/grello-app",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "manager"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "manager"] }],
   },
   {
     id: "marketingowiec",
@@ -299,12 +234,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://marketingowiec.grdn.pl",
     environment: "prod",
     category: "narzędzia",
-    sourcePath: "/home/ubuntu/Projects/marketingowiec/app",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "authenticated" }
-    ]
+    access: [{ source: "authenticated" }],
   },
   {
     id: "assets",
@@ -313,25 +243,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://assets.grdn.pl",
     environment: "prod",
     category: "narzędzia",
-    sourcePath: "/home/ubuntu/Projects/assets/app",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "manager", "kelner"] }
-    ]
-  },
-  {
-    id: "chat",
-    name: "Chat",
-    description: "Wewnętrzny komunikator dla zespołu.",
-    url: "https://chat.grdn.pl",
-    environment: "prod",
-    category: "narzędzia",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "manager", "kelner"] }],
   },
 
   // ── Infrastruktura & Monitoring ────────────────────────────
@@ -342,12 +254,7 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://metersapp.grdn.pl",
     environment: "prod",
     category: "infrastruktura",
-    sourcePath: "/home/ubuntu/Projects/metersapp",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "manager"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "manager"] }],
   },
   {
     id: "tereny-zielone",
@@ -356,11 +263,6 @@ export const appRegistry: AppRegistryEntry[] = [
     url: "https://tereny-zielone.grdn.pl",
     environment: "prod",
     category: "infrastruktura",
-    sourcePath: "/home/ubuntu/Projects/tereny-zielone",
-    enabled: true,
-    visibleInHome: true,
-    access: [
-      { source: "realm", anyRoles: ["admin", "manager"] }
-    ]
+    access: [{ source: "realm", anyRoles: ["admin", "manager"] }],
   },
 ];

@@ -31,6 +31,8 @@ export const config = {
   port: envNumber("PORT", 19010),
   corsOrigin: env("CORS_ORIGIN", "http://192.168.14.55:19000"),
   projectsRoot: env("PROJECTS_ROOT", "/home/ubuntu/Projects"),
+  accessSyncTtlMs: envNumber("ACCESS_SYNC_TTL_MS", 15 * 60 * 1000),
+  accessSyncTimeoutMs: envNumber("ACCESS_SYNC_TIMEOUT_MS", 10_000),
   scanReportRealmRoles: splitCsv(env("SCAN_REPORT_REALM_ROLES", "developer,employee.developer")),
   keycloakIssuer: env("KEYCLOAK_ISSUER_URL", "https://auth.grdn.pl/realms/garden"),
   keycloakJwksUrl: env(

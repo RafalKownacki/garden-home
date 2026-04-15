@@ -17,6 +17,17 @@ export type MatrixApp = {
   name: string;
   lastRegisteredAt?: string | null;
   isStale?: boolean;
+  accessSyncStatus?:
+    | "legacy"
+    | "fresh"
+    | "stale"
+    | "failed"
+    | "never_synced"
+    | "not_configured";
+  accessSyncFetchedAt?: number | null;
+  accessSyncGeneratedAt?: string | null;
+  accessSyncUserCount?: number | null;
+  accessSyncError?: string | null;
 };
 
 export type MatrixRow = {

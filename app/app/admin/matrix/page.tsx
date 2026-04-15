@@ -6,6 +6,52 @@ import { useAuth } from "@/src/auth/use-auth";
 import { apiGet } from "@/src/lib/api";
 import type { MatrixResponse } from "@/src/types/api";
 
+function syncBadge(app: MatrixResponse["apps"][number]) {
+  switch (app.accessSyncStatus) {
+    case "fresh":
+      return {
+        label: app.accessSyncUserCount != null ? `${app.accessSyncUserCount} users` : "fresh",
+        className:
+          "rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-semibold normal-case text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
+        title: app.accessSyncGeneratedAt
+          ? `Snapshot wygenerowany: ${new Date(app.accessSyncGeneratedAt).toLocaleString()}`
+          : "Świeży snapshot dostępu",
+      };
+    case "stale":
+      return {
+        label: "snapshot stale",
+        className:
+          "rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold normal-case text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+        title: app.accessSyncFetchedAt
+          ? `Ostatni fetch: ${new Date(app.accessSyncFetchedAt).toLocaleString()}`
+          : "Snapshot wygasł",
+      };
+    case "failed":
+      return {
+        label: "snapshot failed",
+        className:
+          "rounded bg-red-100 px-1.5 py-0.5 text-[9px] font-semibold normal-case text-red-800 dark:bg-red-900/30 dark:text-red-400",
+        title: app.accessSyncError ?? "Ostatnia synchronizacja nie powiodła się",
+      };
+    case "never_synced":
+      return {
+        label: "never synced",
+        className:
+          "rounded bg-surface-strong px-1.5 py-0.5 text-[9px] font-semibold normal-case text-muted",
+        title: "Brak pobranego snapshotu dostępu",
+      };
+    case "legacy":
+      return {
+        label: "legacy rules",
+        className:
+          "rounded bg-surface-strong px-1.5 py-0.5 text-[9px] font-semibold normal-case text-muted",
+        title: "Fallback do lokalnych reguł access w garden-home",
+      };
+    default:
+      return null;
+  }
+}
+
 export default function MatrixPage() {
   const router = useRouter();
   const { isReady, isAuthenticated, token, profile } = useAuth();
@@ -50,7 +96,7 @@ export default function MatrixPage() {
             </div>
             <div>
               <h1 className="text-base font-semibold text-foreground leading-tight">Macierz dostępów</h1>
-              <p className="text-xs text-muted leading-tight">Read-only — apki same deklarują dostęp przy starcie</p>
+              <p className="text-xs text-muted leading-tight">Read-only — access z cache snapshotów, fallback legacy tylko dla niemigrowanych</p>
             </div>
           </div>
           <button
@@ -112,32 +158,40 @@ export default function MatrixPage() {
                   <th className="px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted whitespace-nowrap">
                     Typ
                   </th>
-                  {matrix.apps.map((app) => (
-                    <th key={app.id} className="px-4 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-muted whitespace-nowrap">
-                      <div className="flex flex-col items-center gap-0.5">
-                        <span>{app.name}</span>
-                        {app.isStale ? (
-                          <span
-                            className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold normal-case text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-                            title={
-                              app.lastRegisteredAt
-                                ? `Ostatnia rejestracja: ${new Date(app.lastRegisteredAt).toLocaleString()}`
-                                : "Brak rejestracji"
-                            }
-                          >
-                            stale
-                          </span>
-                        ) : app.lastRegisteredAt ? (
-                          <span
-                            className="text-[9px] font-normal normal-case text-muted/60"
-                            title={`Ostatnia rejestracja: ${new Date(app.lastRegisteredAt).toLocaleString()}`}
-                          >
-                            {new Date(app.lastRegisteredAt).toLocaleDateString()}
-                          </span>
-                        ) : null}
-                      </div>
-                    </th>
-                  ))}
+                  {matrix.apps.map((app) => {
+                    const badge = syncBadge(app);
+                    return (
+                      <th key={app.id} className="px-4 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-muted whitespace-nowrap">
+                        <div className="flex flex-col items-center gap-0.5">
+                          <span>{app.name}</span>
+                          {badge ? (
+                            <span className={badge.className} title={badge.title}>
+                              {badge.label}
+                            </span>
+                          ) : null}
+                          {app.isStale ? (
+                            <span
+                              className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold normal-case text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                              title={
+                                app.lastRegisteredAt
+                                  ? `Ostatnia rejestracja: ${new Date(app.lastRegisteredAt).toLocaleString()}`
+                                  : "Brak rejestracji"
+                              }
+                            >
+                              stale
+                            </span>
+                          ) : app.lastRegisteredAt ? (
+                            <span
+                              className="text-[9px] font-normal normal-case text-muted/60"
+                              title={`Ostatnia rejestracja: ${new Date(app.lastRegisteredAt).toLocaleString()}`}
+                            >
+                              {new Date(app.lastRegisteredAt).toLocaleDateString()}
+                            </span>
+                          ) : null}
+                        </div>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>

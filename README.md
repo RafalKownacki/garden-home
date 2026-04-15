@@ -32,12 +32,19 @@ Skan:
 
 ## Registry aplikacji
 
-Wpisy trzymane są w `shared/app-registry.ts`.
+Metadane app są składane z trzech warstw:
+
+- `shared/app-registry.ts` - seed fallback dla migracji i lokalnego dev
+- `shared/app-registry-overrides.ts` - centralne override'y `enabled`, `visibleInHome`, `sourcePath`
+- `data/app-registry.json` - runtime registration publikowany przez appki przez `POST /v1/registry/register`
+
+Effective access do Home nie jest już liczony wyłącznie z lokalnych ról. Dla apek z `accessSync.mode="pull_snapshot_v1"` Home pulluje i cache'uje snapshot `user_sub` do `data/access-snapshots.sqlite`.
 
 Zasady:
 
 - aplikacja jest widoczna tylko gdy `enabled=true`
 - aplikacja jest widoczna tylko gdy `visibleInHome=true`
 - aplikacja jest widoczna tylko dla `environment='prod'`
-- aplikacja bez `access` nie jest widoczna nikomu
+- aplikacja z `accessSync` jest widoczna tylko dla userów obecnych w świeżym snapshotcie
+- aplikacja bez `accessSync` używa tymczasowego fallbacku do legacy `access`
 - skaner służy tylko do bootstrapu kandydatów, a nie do automatycznej publikacji

@@ -4,7 +4,7 @@ export function hasAccess(app: AppRegistryEntry, user: UserAccessProfile): boole
   if (!app.enabled) return false;
   if (!app.visibleInHome) return false;
   if (app.environment !== "prod") return false;
-  if (!app.access.length) return false;
+  if (!app.access?.length) return false;
 
   return app.access.some((rule) => {
     if (rule.source === "authenticated") {

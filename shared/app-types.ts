@@ -3,18 +3,9 @@ export type AppAccessRule =
   | { source: "client"; clientId: string; anyRoles: string[] }
   | { source: "authenticated" };
 
-export type AppRegistryEntry = {
-  id: string;
-  name: string;
-  description: string;
+export type AppAccessSyncConfig = {
+  mode: "pull_snapshot_v1";
   url: string;
-  environment: "prod";
-  category?: string;
-  sourcePath?: string;
-  enabled: boolean;
-  visibleInHome: boolean;
-  access: AppAccessRule[];
-  lastRegisteredAt?: string;
 };
 
 export type AppManifest = {
@@ -24,8 +15,27 @@ export type AppManifest = {
   url: string;
   environment: "prod";
   category?: string;
+  // Legacy fallback during migration: apps without accessSync still use
+  // the old role-based evaluation until they expose effective-access snapshots.
+  access?: AppAccessRule[];
+  accessSync?: AppAccessSyncConfig;
+};
+
+export type AppRegistrationRecord = AppManifest & {
+  lastRegisteredAt?: string;
+};
+
+export type AppRegistryOverride = {
+  id: string;
   sourcePath?: string;
-  access: AppAccessRule[];
+  enabled?: boolean;
+  visibleInHome?: boolean;
+};
+
+export type AppRegistryEntry = AppRegistrationRecord & {
+  sourcePath?: string;
+  enabled: boolean;
+  visibleInHome: boolean;
 };
 
 export type HomeAppCard = {
