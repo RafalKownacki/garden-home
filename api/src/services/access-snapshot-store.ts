@@ -307,7 +307,14 @@ function chunk<T>(items: T[], size: number): T[][] {
   return groups;
 }
 
-const defaultStore = createAccessSnapshotStore();
+let defaultStore: ReturnType<typeof createAccessSnapshotStore> | null = null;
+
+function getDefaultStore() {
+  if (!defaultStore) {
+    defaultStore = createAccessSnapshotStore();
+  }
+  return defaultStore;
+}
 
 export function replaceAccessSnapshot(params: {
   appId: string;
@@ -317,7 +324,7 @@ export function replaceAccessSnapshot(params: {
   subjectMode: AccessSnapshotSubjectMode;
   userSubs: string[];
 }): void {
-  defaultStore.replaceAccessSnapshot(params);
+  getDefaultStore().replaceAccessSnapshot(params);
 }
 
 export function markAccessSnapshotFailure(params: {
@@ -325,30 +332,30 @@ export function markAccessSnapshotFailure(params: {
   fetchedAt: number;
   error: string;
 }): void {
-  defaultStore.markAccessSnapshotFailure(params);
+  getDefaultStore().markAccessSnapshotFailure(params);
 }
 
 export function markAccessSnapshotMode(
   appId: string,
   status: Extract<AccessSnapshotStateStatus, "legacy" | "not_configured">
 ): void {
-  defaultStore.markAccessSnapshotMode(appId, status);
+  getDefaultStore().markAccessSnapshotMode(appId, status);
 }
 
 export function getAccessSnapshotState(appId: string): AccessSnapshotState | undefined {
-  return defaultStore.getAccessSnapshotState(appId);
+  return getDefaultStore().getAccessSnapshotState(appId);
 }
 
 export function listAccessSnapshotStates(): Map<string, AccessSnapshotState> {
-  return defaultStore.listAccessSnapshotStates();
+  return getDefaultStore().listAccessSnapshotStates();
 }
 
 export function listAccessibleAppIdsForUser(userSub: string, now: number): string[] {
-  return defaultStore.listAccessibleAppIdsForUser(userSub, now);
+  return getDefaultStore().listAccessibleAppIdsForUser(userSub, now);
 }
 
 export function listUsersWithAccessToApp(appId: string, now: number): string[] {
-  return defaultStore.listUsersWithAccessToApp(appId, now);
+  return getDefaultStore().listUsersWithAccessToApp(appId, now);
 }
 
 export function getFreshMembershipRows(
@@ -356,5 +363,5 @@ export function getFreshMembershipRows(
   userSubs: string[],
   now: number
 ): AccessSnapshotMembershipRow[] {
-  return defaultStore.getFreshMembershipRows(appIds, userSubs, now);
+  return getDefaultStore().getFreshMembershipRows(appIds, userSubs, now);
 }

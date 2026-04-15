@@ -10,6 +10,7 @@
     "dev:api": "npm run dev --workspace api",
     "build": "npm run build --workspace app && npm run build --workspace api",
     "lint": "npm run lint --workspace app && npm run lint --workspace api",
+    "test": "npm run test --workspace api",
     "scan:projects": "npm run scan:projects --workspace api"
   }
 }

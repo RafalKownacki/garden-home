@@ -27,6 +27,7 @@ KUBECTL_BIN=$(pick_kubectl)
 REGISTRY=${REGISTRY:-localhost:32000}
 VERSION=${VERSION:-v$(date +%Y.%m.%d-%H%M)}
 DEPLOYED_AT=${DEPLOYED_AT:-$(TZ=Europe/Warsaw date '+%Y-%m-%d %H:%M:%S %Z')}
+SECRET_NAME=${SECRET_NAME:-garden-home-api-secret}
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "[error] docker is required"; exit 1
@@ -46,21 +47,62 @@ DOCKER_BUILDKIT=1 docker build --progress=plain \
 echo "[i] Pushing image ${REGISTRY}/garden-home-api:${VERSION}"
 docker push "${REGISTRY}/garden-home-api:${VERSION}"
 
-# Create K8s secret for admin password if not exists
-if ! ${KUBECTL_BIN} get secret garden-home-api-secret -n "${NAMESPACE}" >/dev/null 2>&1; then
-  echo "[i] Creating K8s secret for Keycloak admin password"
-  ${KUBECTL_BIN} create namespace "${NAMESPACE}" --dry-run=client -o yaml | ${KUBECTL_BIN} apply -f -
-  ${KUBECTL_BIN} create secret generic garden-home-api-secret \
-    --from-literal=KEYCLOAK_ADMIN_PASSWORD="${KEYCLOAK_ADMIN_PASSWORD:-}" \
-    -n "${NAMESPACE}"
-fi
+get_secret_value() {
+  local key="$1"
+  ${KUBECTL_BIN} get secret "${SECRET_NAME}" -n "${NAMESPACE}" \
+    -o "jsonpath={.data.${key}}" 2>/dev/null | base64 --decode 2>/dev/null || true
+}
+
+ensure_secret_value() {
+  local key="$1"
+  local explicit="$2"
+  local fallback="$3"
+  local current
+  current="$(get_secret_value "${key}")"
+
+  if [[ -n "${explicit}" ]]; then
+    printf '%s' "${explicit}"
+    return
+  fi
+  if [[ -n "${current}" ]]; then
+    printf '%s' "${current}"
+    return
+  fi
+  if [[ -n "${fallback}" ]]; then
+    printf '%s' "${fallback}"
+    return
+  fi
+
+  if [[ "${key}" == "OIDC_STATE_SECRET" ]]; then
+    openssl rand -hex 32
+    return
+  fi
+
+  printf ''
+}
+
+${KUBECTL_BIN} create namespace "${NAMESPACE}" --dry-run=client -o yaml | ${KUBECTL_BIN} apply -f -
+
+RESOLVED_KEYCLOAK_ADMIN_PASSWORD="$(ensure_secret_value "KEYCLOAK_ADMIN_PASSWORD" "${KEYCLOAK_ADMIN_PASSWORD:-}" "")"
+RESOLVED_KEYCLOAK_CLIENT_SECRET="$(ensure_secret_value "KEYCLOAK_CLIENT_SECRET" "${KEYCLOAK_CLIENT_SECRET:-}" "")"
+RESOLVED_GARDEN_REGISTRY_KEY="$(ensure_secret_value "GARDEN_REGISTRY_KEY" "${GARDEN_REGISTRY_KEY:-}" "")"
+RESOLVED_OIDC_STATE_SECRET="$(ensure_secret_value "OIDC_STATE_SECRET" "${OIDC_STATE_SECRET:-}" "${RESOLVED_KEYCLOAK_CLIENT_SECRET}")"
+
+echo "[i] Applying Kubernetes secret ${SECRET_NAME}"
+${KUBECTL_BIN} create secret generic "${SECRET_NAME}" \
+  --from-literal=KEYCLOAK_ADMIN_PASSWORD="${RESOLVED_KEYCLOAK_ADMIN_PASSWORD}" \
+  --from-literal=KEYCLOAK_CLIENT_SECRET="${RESOLVED_KEYCLOAK_CLIENT_SECRET}" \
+  --from-literal=GARDEN_REGISTRY_KEY="${RESOLVED_GARDEN_REGISTRY_KEY}" \
+  --from-literal=OIDC_STATE_SECRET="${RESOLVED_OIDC_STATE_SECRET}" \
+  -n "${NAMESPACE}" \
+  --dry-run=client -o yaml | ${KUBECTL_BIN} apply -f -
 
 HELM_ARGS=(
   --set image.registry="${REGISTRY}"
   --set image.repository="garden-home-api"
   --set image.tag="${VERSION}"
   --set-string env.DEPLOYED_AT="${DEPLOYED_AT}"
-  --set secretRef="garden-home-api-secret"
+  --set secretRef="${SECRET_NAME}"
 )
 
 if [[ -n "${INGRESS_HOST:-}" ]]; then

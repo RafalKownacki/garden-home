@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/api/src/server.js",
     "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "node --import tsx --test test/**/*.test.ts",
     "scan:projects": "tsx src/scripts/scan-projects.ts"
   },
   "dependencies": {

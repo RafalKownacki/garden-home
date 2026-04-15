@@ -51,8 +51,10 @@ export function createSnapshotAccessContext(params: {
   membershipRows?: AccessSnapshotMembershipRow[];
 }): SnapshotAccessContext {
   const now = params.now ?? Date.now();
-  const syncStateMap = params.syncStateMap ?? getAccessSyncStateMap();
   const snapshotEntries = params.entries.filter(isSnapshotEntry);
+  const syncStateMap =
+    params.syncStateMap ??
+    (snapshotEntries.length > 0 ? getAccessSyncStateMap() : new Map<string, AccessSnapshotState>());
   const refreshCandidates = new Set<string>();
   const allAuthenticatedAppIds = new Set<string>();
   const explicitFreshAppIds: string[] = [];

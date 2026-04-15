@@ -11,6 +11,7 @@ Portal startowy dla użytkowników realm `garden`, pokazujący tylko produkcyjne
 ## Uruchomienie
 
 1. Skonfiguruj `.env` w `app/` i `api/`.
+   - API wymaga `OIDC_STATE_SECRET` do podpisywania krótkotrwałego stanu logowania dla backendowego flow OIDC; na Kubernetes wartość powinna przychodzić z `garden-home-api-secret`, nie z Helm `values.yaml`.
 2. Uruchom `npm install` w katalogu głównym lub osobno w `app/` i `api/`.
 3. W osobnych terminalach uruchom:
    - `npm run dev --workspace app`
