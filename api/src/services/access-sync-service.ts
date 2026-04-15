@@ -192,8 +192,8 @@ export function describeAccessSyncHealth(
 ): AccessSyncHealth {
   if (hasPullSnapshotConfig(entry)) {
     if (!state) return "never_synced";
-    if (isFreshState(state, now)) return "fresh";
     if (state.status === "failed") return "failed";
+    if (isFreshState(state, now)) return "fresh";
     return state.generated_at ? "stale" : "never_synced";
   }
 
