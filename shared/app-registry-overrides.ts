@@ -34,6 +34,11 @@ export const appRegistryOverrides: AppRegistryOverride[] = [
   { id: "marketingowiec", sourcePath: "/home/ubuntu/Projects/marketingowiec/app" },
   { id: "assets", sourcePath: "/home/ubuntu/Projects/assets/app" },
   { id: "chat", enabled: false, visibleInHome: false },
-  { id: "metersapp", sourcePath: "/home/ubuntu/Projects/metersapp/app" },
+  {
+    id: "metersapp",
+    sourcePath: "/home/ubuntu/Projects/metersapp/app",
+    enabled: false,
+    visibleInHome: false,
+  },
   { id: "tereny-zielone", sourcePath: "/home/ubuntu/Projects/tereny-zielone/app" },
 ];
