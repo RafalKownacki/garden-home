@@ -14,7 +14,12 @@ export const appRegistryOverrides: AppRegistryOverride[] = [
   { id: "strefa-kelnera", sourcePath: "/home/ubuntu/Projects/strefa-kelnera-app" },
   { id: "recipebook", sourcePath: "/home/ubuntu/Projects/recipebook/app" },
   { id: "magazyn", sourcePath: "/home/ubuntu/Projects/magazyn/app" },
-  { id: "zakupy", sourcePath: "/home/ubuntu/Projects/zakupy-app" },
+  {
+    id: "zakupy",
+    sourcePath: "/home/ubuntu/Projects/zakupy-app",
+    enabled: false,
+    visibleInHome: false,
+  },
   {
     id: "haccp-panel",
     sourcePath: "/home/ubuntu/Projects/haccp-panel/app",

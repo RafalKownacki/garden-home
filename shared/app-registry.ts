@@ -158,15 +158,6 @@ export const appRegistry: AppManifest[] = [
     ],
   },
   {
-    id: "zakupy",
-    name: "Zakupy",
-    description: "Zarządzanie zamówieniami i zakupami dla kuchni.",
-    url: "https://zakupy.grdn.pl",
-    environment: "prod",
-    category: "restauracja",
-    access: [{ source: "realm", anyRoles: ["admin", "manager"] }],
-  },
-  {
     id: "haccp-panel",
     name: "HACCP",
     description: "Dokumentacja HACCP, kontrole temperatury i audyty.",
