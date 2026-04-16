@@ -2,7 +2,7 @@ import type { AppRegistryOverride } from "./app-types.js";
 
 export const appRegistryOverrides: AppRegistryOverride[] = [
   { id: "employee", sourcePath: "/home/ubuntu/Projects/hr-platform/apps/employee-web" },
-  { id: "lista-plac" },
+  { id: "lista-plac", sourcePath: "/home/ubuntu/Projects/hr-platform/apps/lista-plac-web" },
   { id: "personnel-notes", sourcePath: "/home/ubuntu/Projects/personnel-notes-app" },
   { id: "rekrutacja", sourcePath: "/home/ubuntu/Projects/rekrutacja/rekrutacja-app" },
   { id: "system-rezerwacji", sourcePath: "/home/ubuntu/Projects/beo/app" },
