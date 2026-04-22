@@ -10,6 +10,7 @@ import { registerRegistrationRoutes } from "./routes/register.js";
 import { registerScanRoutes } from "./routes/scan.js";
 import { registerUptimeRoutes } from "./routes/uptime.js";
 import { startAccessSyncScheduler } from "./services/access-sync-scheduler.js";
+import { startServiceAccountMarkerScheduler } from "./services/service-account-marker-scheduler.js";
 import { startUptimeScheduler } from "./services/uptime-scheduler.js";
 
 const app = express();
@@ -34,5 +35,6 @@ registerUptimeRoutes(app);
 app.listen(config.port, () => {
   console.log(`garden-home-api listening on :${config.port}`);
   startAccessSyncScheduler();
+  startServiceAccountMarkerScheduler();
   startUptimeScheduler();
 });

@@ -4,30 +4,38 @@ import {
   resolveAppAccessForUser,
   triggerPendingSnapshotRefreshes,
 } from "./access-resolver.js";
-import { isStale, loadRegistry } from "./registry-store.js";
+import { loadRegistry } from "./registry-store.js";
 import { getLatestStatusPerApp } from "./uptime-store.js";
 
-export async function listAppsForUser(user: UserAccessProfile): Promise<HomeAppCard[]> {
-  const registry = await loadRegistry();
-  const statusMap = getLatestStatusPerApp();
-  const now = Date.now();
+export function selectAppsForUser(params: {
+  registry: import("../../../shared/app-types.js").AppRegistryEntry[];
+  statusMap: Map<string, HomeAppCard["uptimeStatus"]>;
+  user: UserAccessProfile;
+  now?: number;
+}): HomeAppCard[] {
+  const now = params.now ?? Date.now();
   const context = createSnapshotAccessContext({
-    entries: registry,
-    userSubs: [user.userId],
+    entries: params.registry,
+    userSubs: [params.user.userId],
     now,
   });
   triggerPendingSnapshotRefreshes(context);
 
-  return registry
-    .filter((entry) => !isStale(entry, now))
+  return params.registry
     .filter((entry) => entry.enabled && entry.visibleInHome && entry.environment === "prod")
-    .filter((entry) => resolveAppAccessForUser(entry, user, context).hasAccess)
+    .filter((entry) => resolveAppAccessForUser(entry, params.user, context).hasAccess)
     .map((entry) => ({
       id: entry.id,
       name: entry.name,
       description: entry.description,
       url: entry.url,
       category: entry.category,
-      uptimeStatus: statusMap.get(entry.id) ?? "unknown",
+      uptimeStatus: params.statusMap.get(entry.id) ?? "unknown",
     }));
+}
+
+export async function listAppsForUser(user: UserAccessProfile): Promise<HomeAppCard[]> {
+  const registry = await loadRegistry();
+  const statusMap = getLatestStatusPerApp();
+  return selectAppsForUser({ registry, statusMap, user });
 }

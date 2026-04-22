@@ -15,6 +15,7 @@ export type AppsResponse = {
 export type MatrixApp = {
   id: string;
   name: string;
+  category?: string;
   lastRegisteredAt?: string | null;
   isStale?: boolean;
   accessSyncStatus?:

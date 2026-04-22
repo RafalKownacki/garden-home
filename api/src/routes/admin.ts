@@ -11,7 +11,6 @@ import {
 } from "../services/access-sync-service.js";
 import { listUsersWithRoles } from "../services/keycloak-admin.js";
 import * as store from "../services/registry-store.js";
-import { isServiceAccountUsername } from "../services/service-account-utils.js";
 
 function requireAdmin(req: Request, res: Response): boolean {
   if (!req.userProfile?.realmRoles.includes("admin")) {
@@ -44,7 +43,7 @@ export function registerAdminRoutes(app: Express) {
       triggerPendingSnapshotRefreshes(accessContext);
 
       const rows = allUsers.map((user) => {
-        const service = isServiceAccountUsername(user.username);
+        const service = user.principalType === "service";
         return {
           userId: user.userId,
           username: user.username,
@@ -68,6 +67,7 @@ export function registerAdminRoutes(app: Express) {
           return {
             id: entry.id,
             name: entry.name,
+            category: entry.category ?? null,
             lastRegisteredAt: entry.lastRegisteredAt ?? null,
             isStale: store.isStale(entry, now),
             accessSyncStatus: describeAccessSyncHealth(entry, syncState, now),

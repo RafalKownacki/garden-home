@@ -40,5 +40,6 @@ export const appRegistryOverrides: AppRegistryOverride[] = [
     enabled: false,
     visibleInHome: false,
   },
+  { id: "elektryk", sourcePath: "/home/ubuntu/Projects/elektryk/app" },
   { id: "tereny-zielone", sourcePath: "/home/ubuntu/Projects/tereny-zielone/app" },
 ];

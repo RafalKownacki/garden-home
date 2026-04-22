@@ -13,7 +13,7 @@ import {
   replaceAccessSnapshot,
   type AccessSnapshotState,
 } from "./access-snapshot-store.js";
-import { getById, isStale, loadRegistry } from "./registry-store.js";
+import { getById, loadRegistry } from "./registry-store.js";
 
 type PullSnapshotPayload = {
   appId: string;
@@ -130,8 +130,8 @@ async function fetchPullSnapshot(
 }
 
 async function refreshAppInternal(app: AppRegistryEntry): Promise<AccessSyncResult> {
-  if (!app.enabled || app.environment !== "prod" || isStale(app)) {
-    return { appId: app.id, status: "skipped", reason: "INACTIVE_OR_STALE" };
+  if (!app.enabled || app.environment !== "prod") {
+    return { appId: app.id, status: "skipped", reason: "INACTIVE" };
   }
 
   if (!hasPullSnapshotConfig(app)) {

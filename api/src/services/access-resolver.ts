@@ -77,7 +77,9 @@ export function createSnapshotAccessContext(params: {
 
   const membershipRows =
     params.membershipRows ??
-    getFreshMembershipRows(explicitFreshAppIds, params.userSubs, now);
+    (explicitFreshAppIds.length > 0 && params.userSubs.length > 0
+      ? getFreshMembershipRows(explicitFreshAppIds, params.userSubs, now)
+      : []);
   const explicitAppIdsByUser = new Map<string, Set<string>>();
 
   for (const row of membershipRows) {

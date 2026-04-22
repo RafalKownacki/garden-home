@@ -53,6 +53,7 @@ export type UserAccessProfile = {
   userId: string;
   username: string;
   displayName: string | null;
+  principalType: "human" | "service";
   realmRoles: string[];
   clientRoles: Record<string, string[]>;
 };

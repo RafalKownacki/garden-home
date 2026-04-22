@@ -51,7 +51,7 @@ export function Topbar({ appName, profile, onLogout }: TopbarProps) {
             href="/admin/matrix"
             className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted transition hover:border-accent hover:text-accent"
           >
-            Macierz dostępów
+            Użytkownicy
           </Link>
         )}
         <div className="flex items-center gap-2.5">

@@ -48,6 +48,7 @@ function createUser(params: {
     userId: params.userId,
     username: params.userId,
     displayName: params.userId,
+    principalType: "human",
     realmRoles: params.realmRoles ?? [],
     clientRoles: {},
   };

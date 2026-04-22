@@ -49,5 +49,9 @@ export const config = {
   keycloakRealm: env("KEYCLOAK_REALM", "garden"),
   keycloakAdminUsername: env("KEYCLOAK_ADMIN_USERNAME", "admin"),
   keycloakAdminPassword: env("KEYCLOAK_ADMIN_PASSWORD", ""),
+  keycloakServiceAccountMarkerSyncCron: env(
+    "KEYCLOAK_SERVICE_ACCOUNT_MARKER_SYNC_CRON",
+    "*/15 * * * *"
+  ),
   registrationKey: env("GARDEN_REGISTRY_KEY", "")
 };

@@ -90,7 +90,7 @@ export const appRegistry: AppManifest[] = [
   {
     id: "pos-hotelapp",
     name: "POS Hotel",
-    description: "Aplikacja POS dla recepcji hotelowej.",
+    description: "Panel obciążeń hotelowych: rachunki restauracyjne na pokoje, limity pokoi i status przepisania do systemu hotelowego.",
     url: "https://pos-hotelapp.grdn.pl",
     environment: "prod",
     category: "rezerwacje",
@@ -135,7 +135,7 @@ export const appRegistry: AppManifest[] = [
   {
     id: "recipebook",
     name: "Recipebook",
-    description: "Receptury, kalkulacje food cost i karty dań.",
+    description: "Receptury, publikacje, food cost i standardy operacyjne dla kuchni.",
     url: "https://recipebook.grdn.pl",
     environment: "prod",
     category: "restauracja",
@@ -165,6 +165,15 @@ export const appRegistry: AppManifest[] = [
     environment: "prod",
     category: "restauracja",
     access: [{ source: "realm", anyRoles: ["admin", "haccp-editor", "haccp-reviewer"] }],
+  },
+  {
+    id: "beo-oferty",
+    name: "BEO Oferty",
+    description: "Katalog dań, presety menu i dodatki — oferta imprezowa (satelita BEO).",
+    url: "https://beo-oferty.grdn.pl",
+    environment: "prod",
+    category: "restauracja",
+    access: [{ source: "realm", anyRoles: ["admin", "oferta_editor"] }],
   },
 
   // ── Finanse ────────────────────────────────────────────────
@@ -246,6 +255,15 @@ export const appRegistry: AppManifest[] = [
     environment: "prod",
     category: "infrastruktura",
     access: [{ source: "realm", anyRoles: ["admin", "manager"] }],
+  },
+  {
+    id: "elektryk",
+    name: "Elektryk",
+    description: "Projekty elektryczne, raporty dnia, zadania i magazyn sprzętu.",
+    url: "https://elektryk.grdn.pl",
+    environment: "prod",
+    category: "infrastruktura",
+    access: [{ source: "realm", anyRoles: ["admin", "elektryk.admin", "elektryk.manager", "elektryk.user", "elektryk.reporter"] }],
   },
   {
     id: "tereny-zielone",
