@@ -33,3 +33,29 @@ export async function apiGet<T>(path: string, token?: string | null): Promise<T>
 
   return (await response.json()) as T;
 }
+
+export async function apiPut<T>(
+  path: string,
+  body: unknown,
+  token?: string | null
+): Promise<T> {
+  const url = resolveApiUrl(path);
+  const headers = new Headers({ "Content-Type": "application/json" });
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const response = await fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+    cache: "no-store",
+    ...(shouldIncludeCredentials(url) ? { credentials: "include" as const } : {})
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return (await response.json()) as T;
+}

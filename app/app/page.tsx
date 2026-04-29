@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppsGrid } from "@/components/apps-grid";
 import { EmptyState } from "@/components/empty-state";
 import { SkeletonGrid } from "@/components/skeleton-grid";
 import { Topbar } from "@/components/topbar";
+import {
+  VisibilityFilter,
+  type VisibilityFilterValue,
+} from "@/components/visibility-filter";
 import { useAuth } from "@/src/auth/use-auth";
 import { apiGet } from "@/src/lib/api";
 import { appConfig } from "@/src/lib/config";
-import type { AppsResponse } from "@/src/types/api";
+import type { AppNetworkVisibilityMode, AppsResponse } from "@/src/types/api";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -23,6 +27,32 @@ export default function HomePage() {
   const [appsResponse, setAppsResponse] = useState<AppsResponse>({ count: 0, apps: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilterValue>("all");
+
+  const visibilityCounts = useMemo(() => {
+    const counts: Partial<Record<VisibilityFilterValue, number>> = {
+      all: appsResponse.apps.length,
+    };
+    for (const app of appsResponse.apps) {
+      const key = app.networkVisibility;
+      counts[key] = (counts[key] ?? 0) + 1;
+    }
+    return counts;
+  }, [appsResponse.apps]);
+
+  const filteredApps =
+    visibilityFilter === "all"
+      ? appsResponse.apps
+      : appsResponse.apps.filter((app) => app.networkVisibility === visibilityFilter);
+
+  const handleVisibilityChange = (appId: string, mode: AppNetworkVisibilityMode) => {
+    setAppsResponse((prev) => ({
+      ...prev,
+      apps: prev.apps.map((app) =>
+        app.id === appId ? { ...app, networkVisibility: mode } : app
+      ),
+    }));
+  };
 
   useEffect(() => {
     if (!isReady) return;
@@ -105,7 +135,23 @@ export default function HomePage() {
             </button>
           </section>
         ) : appsResponse.apps.length > 0 ? (
-          <AppsGrid apps={appsResponse.apps} />
+          <>
+            <VisibilityFilter
+              value={visibilityFilter}
+              onChange={setVisibilityFilter}
+              counts={visibilityCounts}
+            />
+            {filteredApps.length > 0 ? (
+              <AppsGrid
+                apps={filteredApps}
+                onVisibilityChange={handleVisibilityChange}
+              />
+            ) : (
+              <section className="rounded-2xl border border-border bg-surface px-6 py-8 text-center text-sm text-muted">
+                Brak aplikacji w wybranym filtrze.
+              </section>
+            )}
+          </>
         ) : (
           <EmptyState />
         )}

@@ -1,15 +1,21 @@
-import type { HomeAppCard, UserAccessProfile } from "../../../shared/app-types.js";
+import type {
+  AppNetworkVisibilityMode,
+  HomeAppCard,
+  UserAccessProfile,
+} from "../../../shared/app-types.js";
 import {
   createSnapshotAccessContext,
   resolveAppAccessForUser,
   triggerPendingSnapshotRefreshes,
 } from "./access-resolver.js";
+import { listNetworkVisibilityModes } from "./network-visibility-store.js";
 import { loadRegistry } from "./registry-store.js";
 import { getLatestStatusPerApp } from "./uptime-store.js";
 
 export function selectAppsForUser(params: {
   registry: import("../../../shared/app-types.js").AppRegistryEntry[];
   statusMap: Map<string, HomeAppCard["uptimeStatus"]>;
+  visibilityMap: Map<string, AppNetworkVisibilityMode>;
   user: UserAccessProfile;
   now?: number;
 }): HomeAppCard[] {
@@ -31,11 +37,13 @@ export function selectAppsForUser(params: {
       url: entry.url,
       category: entry.category,
       uptimeStatus: params.statusMap.get(entry.id) ?? "unknown",
+      networkVisibility: params.visibilityMap.get(entry.id) ?? "unknown",
     }));
 }
 
 export async function listAppsForUser(user: UserAccessProfile): Promise<HomeAppCard[]> {
   const registry = await loadRegistry();
   const statusMap = getLatestStatusPerApp();
-  return selectAppsForUser({ registry, statusMap, user });
+  const visibilityMap = listNetworkVisibilityModes();
+  return selectAppsForUser({ registry, statusMap, visibilityMap, user });
 }

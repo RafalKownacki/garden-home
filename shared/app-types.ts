@@ -40,6 +40,12 @@ export type AppRegistryEntry = AppRegistrationRecord & {
   visibleInHome: boolean;
 };
 
+export type AppNetworkVisibilityMode =
+  | "unknown"
+  | "whitelist-lan"
+  | "lan"
+  | "internet";
+
 export type HomeAppCard = {
   id: string;
   name: string;
@@ -47,6 +53,7 @@ export type HomeAppCard = {
   url: string;
   category?: string;
   uptimeStatus?: "up" | "down" | "unknown";
+  networkVisibility: AppNetworkVisibilityMode;
 };
 
 export type UserAccessProfile = {

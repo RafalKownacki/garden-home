@@ -46,6 +46,7 @@ test("listAppsForUser keeps stale legacy apps visible when access is allowed", a
   const apps = selectAppsForUser({
     registry: [staleApp, hiddenApp],
     statusMap: new Map([[staleApp.id, "up"]]),
+    visibilityMap: new Map(),
     user: createUser(),
     now: Date.parse("2026-04-17T13:00:00.000Z"),
   });

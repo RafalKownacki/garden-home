@@ -10,7 +10,20 @@ import {
   refreshAccessSnapshotForAppId,
 } from "../services/access-sync-service.js";
 import { listUsersWithRoles } from "../services/keycloak-admin.js";
+import { setNetworkVisibilityMode } from "../services/network-visibility-store.js";
 import * as store from "../services/registry-store.js";
+import type { AppNetworkVisibilityMode } from "../../../shared/app-types.js";
+
+const NETWORK_VISIBILITY_MODES: AppNetworkVisibilityMode[] = [
+  "unknown",
+  "whitelist-lan",
+  "lan",
+  "internet",
+];
+
+function isNetworkVisibilityMode(value: unknown): value is AppNetworkVisibilityMode {
+  return typeof value === "string" && (NETWORK_VISIBILITY_MODES as string[]).includes(value);
+}
 
 function requireAdmin(req: Request, res: Response): boolean {
   if (!req.userProfile?.realmRoles.includes("admin")) {
@@ -134,6 +147,25 @@ export function registerAdminRoutes(app: Express) {
       accessSyncUserCount: syncState?.user_count ?? null,
       accessSyncError: syncState?.error ?? null,
     });
+  });
+
+  app.put("/v1/admin/registry/:id/network-visibility", async (req, res) => {
+    if (!requireAdmin(req, res)) return;
+
+    const entry = await store.getById(req.params.id);
+    if (!entry) {
+      res.status(404).json({ error: "NOT_FOUND" });
+      return;
+    }
+
+    const mode = (req.body as { mode?: unknown } | undefined)?.mode;
+    if (!isNetworkVisibilityMode(mode)) {
+      res.status(400).json({ error: "INVALID_MODE" });
+      return;
+    }
+
+    setNetworkVisibilityMode(entry.id, mode, req.userProfile?.userId ?? null);
+    res.json({ appId: entry.id, mode });
   });
 
   const readOnlyHandler = (_req: Request, res: Response): void => {
