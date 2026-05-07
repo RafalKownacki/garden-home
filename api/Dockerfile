@@ -4,8 +4,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3 make g+
     && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 COPY api/package.json ./api/
-COPY shared ./shared
 RUN npm ci --workspace api
+COPY shared ./shared
 COPY api/tsconfig.json ./api/
 COPY api/src ./api/src
 RUN cd api && npm run build

@@ -1,0 +1,427 @@
+{
+  "snapshot_date": "2026-04-28T18:28:00+02:00",
+  "scope_roots": [
+    "garden-home/api/src",
+    "garden-home/app/src"
+  ],
+  "counted_extensions": [
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    ".css",
+    ".sql",
+    ".mjs",
+    ".html"
+  ],
+  "exclude_rules": [
+    "*.d.ts",
+    ".git",
+    ".next",
+    ".pytest_cache",
+    ".turbo",
+    "__pycache__",
+    "build",
+    "coverage",
+    "dist",
+    "generated output outside source roots",
+    "lockfiles",
+    "node_modules",
+    "transpiled js/jsx mirrors sibling ts/tsx"
+  ],
+  "test_detection_rules": [
+    "*.spec.*",
+    "*.test.*",
+    "/test/",
+    "/tests/",
+    "/__tests__/"
+  ],
+  "count_mode": "raw LOC including comments and blank lines",
+  "bucket_schema_version": "garden-home-skill-heuristic-v1",
+  "bucket_mapping_source": "skill heuristic path-first keyword mapping",
+  "includes_worktree_changes": false,
+  "report_generator": "codex grdn-feature-loc-breakdown ecosystem generator 2026-04-28",
+  "product": "garden-home",
+  "product_dirs": [
+    "garden-home"
+  ],
+  "business_subtotal": {
+    "total": 3585,
+    "tests": 0,
+    "no_tests": 3585,
+    "files": 40
+  },
+  "infra_shared": {
+    "feature": "infra/shared",
+    "total": 126,
+    "tests": 0,
+    "no_tests": 126,
+    "files": 3
+  },
+  "grand_total": {
+    "total": 3711,
+    "tests": 0,
+    "no_tests": 3711,
+    "files": 43
+  },
+  "totals": {
+    "business_subtotal": {
+      "total": 3585,
+      "tests": 0,
+      "no_tests": 3585,
+      "files": 40
+    },
+    "infra_shared": {
+      "feature": "infra/shared",
+      "total": 126,
+      "tests": 0,
+      "no_tests": 126,
+      "files": 3
+    },
+    "grand_total": {
+      "total": 3711,
+      "tests": 0,
+      "no_tests": 3711,
+      "files": 43
+    }
+  },
+  "bucket_rows": [
+    {
+      "feature": "rbac / access",
+      "total": 2082,
+      "tests": 0,
+      "no_tests": 2082,
+      "files": 22
+    },
+    {
+      "feature": "operations / tasks",
+      "total": 1435,
+      "tests": 0,
+      "no_tests": 1435,
+      "files": 16
+    },
+    {
+      "feature": "employees / payroll",
+      "total": 68,
+      "tests": 0,
+      "no_tests": 68,
+      "files": 2
+    },
+    {
+      "feature": "infra/shared",
+      "total": 126,
+      "tests": 0,
+      "no_tests": 126,
+      "files": 3
+    }
+  ],
+  "bucket_order": [
+    "rbac / access",
+    "operations / tasks",
+    "employees / payroll",
+    "infra/shared"
+  ],
+  "file_ledger": [
+    {
+      "path": "garden-home/api/src/server.ts",
+      "bucket": "infra/shared",
+      "total_loc": 40,
+      "test_loc": 0,
+      "prod_loc": 40
+    },
+    {
+      "path": "garden-home/api/src/config.ts",
+      "bucket": "infra/shared",
+      "total_loc": 57,
+      "test_loc": 0,
+      "prod_loc": 57
+    },
+    {
+      "path": "garden-home/api/src/routes/uptime.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 113,
+      "test_loc": 0,
+      "prod_loc": 113
+    },
+    {
+      "path": "garden-home/api/src/routes/auth.ts",
+      "bucket": "rbac / access",
+      "total_loc": 42,
+      "test_loc": 0,
+      "prod_loc": 42
+    },
+    {
+      "path": "garden-home/api/src/routes/register.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 113,
+      "test_loc": 0,
+      "prod_loc": 113
+    },
+    {
+      "path": "garden-home/api/src/routes/apps.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 51,
+      "test_loc": 0,
+      "prod_loc": 51
+    },
+    {
+      "path": "garden-home/api/src/routes/scan.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 49,
+      "test_loc": 0,
+      "prod_loc": 49
+    },
+    {
+      "path": "garden-home/api/src/routes/admin.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 151,
+      "test_loc": 0,
+      "prod_loc": 151
+    },
+    {
+      "path": "garden-home/api/src/routes/health.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 10,
+      "test_loc": 0,
+      "prod_loc": 10
+    },
+    {
+      "path": "garden-home/api/src/services/service-account-marker-scheduler.ts",
+      "bucket": "employees / payroll",
+      "total_loc": 46,
+      "test_loc": 0,
+      "prod_loc": 46
+    },
+    {
+      "path": "garden-home/api/src/services/registry-store.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 185,
+      "test_loc": 0,
+      "prod_loc": 185
+    },
+    {
+      "path": "garden-home/api/src/services/uptime-store.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 89,
+      "test_loc": 0,
+      "prod_loc": 89
+    },
+    {
+      "path": "garden-home/api/src/services/access-evaluator.ts",
+      "bucket": "rbac / access",
+      "total_loc": 21,
+      "test_loc": 0,
+      "prod_loc": 21
+    },
+    {
+      "path": "garden-home/api/src/services/access-sync-scheduler.ts",
+      "bucket": "rbac / access",
+      "total_loc": 25,
+      "test_loc": 0,
+      "prod_loc": 25
+    },
+    {
+      "path": "garden-home/api/src/services/service-account-utils.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 48,
+      "test_loc": 0,
+      "prod_loc": 48
+    },
+    {
+      "path": "garden-home/api/src/services/apps-service.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 41,
+      "test_loc": 0,
+      "prod_loc": 41
+    },
+    {
+      "path": "garden-home/api/src/services/uptime-checker.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 63,
+      "test_loc": 0,
+      "prod_loc": 63
+    },
+    {
+      "path": "garden-home/api/src/services/access-resolver.ts",
+      "bucket": "rbac / access",
+      "total_loc": 133,
+      "test_loc": 0,
+      "prod_loc": 133
+    },
+    {
+      "path": "garden-home/api/src/services/access-snapshot-store.ts",
+      "bucket": "rbac / access",
+      "total_loc": 367,
+      "test_loc": 0,
+      "prod_loc": 367
+    },
+    {
+      "path": "garden-home/api/src/services/uptime-scheduler.ts",
+      "bucket": "employees / payroll",
+      "total_loc": 22,
+      "test_loc": 0,
+      "prod_loc": 22
+    },
+    {
+      "path": "garden-home/api/src/services/scan-projects.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 362,
+      "test_loc": 0,
+      "prod_loc": 362
+    },
+    {
+      "path": "garden-home/api/src/services/access-sync-service.ts",
+      "bucket": "rbac / access",
+      "total_loc": 231,
+      "test_loc": 0,
+      "prod_loc": 231
+    },
+    {
+      "path": "garden-home/api/src/services/keycloak-admin.ts",
+      "bucket": "rbac / access",
+      "total_loc": 293,
+      "test_loc": 0,
+      "prod_loc": 293
+    },
+    {
+      "path": "garden-home/api/src/services/app-access-listing.ts",
+      "bucket": "rbac / access",
+      "total_loc": 45,
+      "test_loc": 0,
+      "prod_loc": 45
+    },
+    {
+      "path": "garden-home/api/src/types/auth.ts",
+      "bucket": "rbac / access",
+      "total_loc": 11,
+      "test_loc": 0,
+      "prod_loc": 11
+    },
+    {
+      "path": "garden-home/api/src/types/apps.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 13,
+      "test_loc": 0,
+      "prod_loc": 13
+    },
+    {
+      "path": "garden-home/api/src/auth/keycloak-session-cookies.ts",
+      "bucket": "rbac / access",
+      "total_loc": 97,
+      "test_loc": 0,
+      "prod_loc": 97
+    },
+    {
+      "path": "garden-home/api/src/auth/keycloak-token.ts",
+      "bucket": "rbac / access",
+      "total_loc": 38,
+      "test_loc": 0,
+      "prod_loc": 38
+    },
+    {
+      "path": "garden-home/api/src/auth/keycloak-oidc-state.ts",
+      "bucket": "rbac / access",
+      "total_loc": 91,
+      "test_loc": 0,
+      "prod_loc": 91
+    },
+    {
+      "path": "garden-home/api/src/auth/keycloak-oidc-client.ts",
+      "bucket": "rbac / access",
+      "total_loc": 53,
+      "test_loc": 0,
+      "prod_loc": 53
+    },
+    {
+      "path": "garden-home/api/src/auth/keycloak-request-utils.ts",
+      "bucket": "rbac / access",
+      "total_loc": 58,
+      "test_loc": 0,
+      "prod_loc": 58
+    },
+    {
+      "path": "garden-home/api/src/auth/verify-registration-key.ts",
+      "bucket": "rbac / access",
+      "total_loc": 32,
+      "test_loc": 0,
+      "prod_loc": 32
+    },
+    {
+      "path": "garden-home/api/src/auth/keycloak-session.ts",
+      "bucket": "rbac / access",
+      "total_loc": 204,
+      "test_loc": 0,
+      "prod_loc": 204
+    },
+    {
+      "path": "garden-home/api/src/auth/verify-token.ts",
+      "bucket": "rbac / access",
+      "total_loc": 71,
+      "test_loc": 0,
+      "prod_loc": 71
+    },
+    {
+      "path": "garden-home/api/src/auth/user-access-profile.ts",
+      "bucket": "rbac / access",
+      "total_loc": 24,
+      "test_loc": 0,
+      "prod_loc": 24
+    },
+    {
+      "path": "garden-home/api/src/scripts/scan-projects.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 24,
+      "test_loc": 0,
+      "prod_loc": 24
+    },
+    {
+      "path": "garden-home/app/src/types/api.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 88,
+      "test_loc": 0,
+      "prod_loc": 88
+    },
+    {
+      "path": "garden-home/app/src/types/auth.ts",
+      "bucket": "rbac / access",
+      "total_loc": 18,
+      "test_loc": 0,
+      "prod_loc": 18
+    },
+    {
+      "path": "garden-home/app/src/auth/use-auth.ts",
+      "bucket": "rbac / access",
+      "total_loc": 13,
+      "test_loc": 0,
+      "prod_loc": 13
+    },
+    {
+      "path": "garden-home/app/src/auth/auth-provider.tsx",
+      "bucket": "rbac / access",
+      "total_loc": 159,
+      "test_loc": 0,
+      "prod_loc": 159
+    },
+    {
+      "path": "garden-home/app/src/auth/auth-client.ts",
+      "bucket": "rbac / access",
+      "total_loc": 56,
+      "test_loc": 0,
+      "prod_loc": 56
+    },
+    {
+      "path": "garden-home/app/src/lib/api.ts",
+      "bucket": "operations / tasks",
+      "total_loc": 35,
+      "test_loc": 0,
+      "prod_loc": 35
+    },
+    {
+      "path": "garden-home/app/src/lib/config.ts",
+      "bucket": "infra/shared",
+      "total_loc": 29,
+      "test_loc": 0,
+      "prod_loc": 29
+    }
+  ]
+}
