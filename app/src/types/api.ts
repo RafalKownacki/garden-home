@@ -12,6 +12,25 @@ export type HomeAppCard = {
   category?: string;
   uptimeStatus?: "up" | "down" | "unknown";
   networkVisibility: AppNetworkVisibilityMode;
+  lessonCount?: number;
+};
+
+export type LessonSummary = {
+  id: string;
+  appId: string;
+  appName?: string;
+  title: string;
+  summary?: string;
+  order: number;
+};
+
+export type LessonDetail = LessonSummary & {
+  contentMarkdown: string;
+};
+
+export type LessonsListResponse = {
+  count: number;
+  lessons: LessonSummary[];
 };
 
 export type AppsResponse = {

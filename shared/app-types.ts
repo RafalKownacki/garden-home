@@ -54,6 +54,7 @@ export type HomeAppCard = {
   category?: string;
   uptimeStatus?: "up" | "down" | "unknown";
   networkVisibility: AppNetworkVisibilityMode;
+  lessonCount?: number;
 };
 
 export type UserAccessProfile = {

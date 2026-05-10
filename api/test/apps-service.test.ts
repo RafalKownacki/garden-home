@@ -47,6 +47,7 @@ test("listAppsForUser keeps stale legacy apps visible when access is allowed", a
     registry: [staleApp, hiddenApp],
     statusMap: new Map([[staleApp.id, "up"]]),
     visibilityMap: new Map(),
+    lessonCountMap: new Map(),
     user: createUser(),
     now: Date.parse("2026-04-17T13:00:00.000Z"),
   });

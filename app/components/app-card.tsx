@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import { useAuth } from "@/src/auth/use-auth";
 import { apiGet, apiPut } from "@/src/lib/api";
@@ -93,6 +94,9 @@ export function AppCard({ app, index, onVisibilityChange }: AppCardProps) {
               token={token}
               onChange={onVisibilityChange}
             />
+            {app.lessonCount && app.lessonCount > 0 ? (
+              <LessonHint appId={app.id} appName={app.name} count={app.lessonCount} />
+            ) : null}
             {isSuperadmin ? <AccessPeek appId={app.id} appName={app.name} token={token} /> : null}
           </div>
         </div>
@@ -114,6 +118,20 @@ export function AppCard({ app, index, onVisibilityChange }: AppCardProps) {
         </a>
       </div>
     </article>
+  );
+}
+
+function LessonHint({ appId, appName, count }: { appId: string; appName: string; count: number }) {
+  return (
+    <Link
+      href={`/lessons?app=${encodeURIComponent(appId)}`}
+      aria-label={`Pomoc — ${count} ${count === 1 ? "lekcja" : count < 5 ? "lekcje" : "lekcji"} o ${appName}`}
+      title={`${count} ${count === 1 ? "lekcja" : count < 5 ? "lekcje" : "lekcji"} jak korzystać z ${appName}`}
+      className="inline-flex h-6 items-center gap-1 rounded-md border border-border bg-surface-strong px-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted transition hover:border-accent hover:text-accent"
+    >
+      <span aria-hidden="true">?</span>
+      <span>{count}</span>
+    </Link>
   );
 }
 

@@ -46,6 +46,12 @@ export function Topbar({ appName, profile, onLogout }: TopbarProps) {
         >
           Status
         </Link>
+        <Link
+          href="/lessons"
+          className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted transition hover:border-accent hover:text-accent"
+        >
+          Pomoc
+        </Link>
         {isAdmin && (
           <Link
             href="/admin/matrix"

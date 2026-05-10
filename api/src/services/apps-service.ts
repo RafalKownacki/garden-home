@@ -8,6 +8,7 @@ import {
   resolveAppAccessForUser,
   triggerPendingSnapshotRefreshes,
 } from "./access-resolver.js";
+import { listLessons } from "./lessons-store.js";
 import { listNetworkVisibilityModes } from "./network-visibility-store.js";
 import { loadRegistry } from "./registry-store.js";
 import { getLatestStatusPerApp } from "./uptime-store.js";
@@ -16,6 +17,7 @@ export function selectAppsForUser(params: {
   registry: import("../../../shared/app-types.js").AppRegistryEntry[];
   statusMap: Map<string, HomeAppCard["uptimeStatus"]>;
   visibilityMap: Map<string, AppNetworkVisibilityMode>;
+  lessonCountMap: Map<string, number>;
   user: UserAccessProfile;
   now?: number;
 }): HomeAppCard[] {
@@ -38,6 +40,7 @@ export function selectAppsForUser(params: {
       category: entry.category,
       uptimeStatus: params.statusMap.get(entry.id) ?? "unknown",
       networkVisibility: params.visibilityMap.get(entry.id) ?? "unknown",
+      lessonCount: params.lessonCountMap.get(entry.id) ?? 0,
     }));
 }
 
@@ -45,5 +48,10 @@ export async function listAppsForUser(user: UserAccessProfile): Promise<HomeAppC
   const registry = await loadRegistry();
   const statusMap = getLatestStatusPerApp();
   const visibilityMap = listNetworkVisibilityModes();
-  return selectAppsForUser({ registry, statusMap, visibilityMap, user });
+  const lessons = await listLessons();
+  const lessonCountMap = new Map<string, number>();
+  for (const lesson of lessons) {
+    lessonCountMap.set(lesson.appId, (lessonCountMap.get(lesson.appId) ?? 0) + 1);
+  }
+  return selectAppsForUser({ registry, statusMap, visibilityMap, lessonCountMap, user });
 }
