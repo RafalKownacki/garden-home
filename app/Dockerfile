@@ -26,6 +26,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=build /workspace/app/public ./public
 COPY --from=build /workspace/app/.next/standalone/app ./
+COPY --from=build /workspace/app/.next/standalone/node_modules/. ./node_modules/
 COPY --from=build /workspace/app/.next/static ./.next/static
 EXPOSE 3000
 CMD ["node", "server.js"]
