@@ -2,162 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  countAccess,
+  Initials,
+  MatrixAccessDetail,
+  RoleBadge,
+} from "@/components/matrix-access-detail";
 import { useAuth } from "@/src/auth/use-auth";
 import { apiGet } from "@/src/lib/api";
-import type { MatrixApp, MatrixResponse, MatrixRow } from "@/src/types/api";
-
-const CATEGORY_ORDER = ["kadry", "rezerwacje", "restauracja", "finanse", "narzędzia", "infrastruktura"];
-const CATEGORY_LABELS: Record<string, string> = {
-  kadry: "Kadry",
-  rezerwacje: "Rezerwacje",
-  restauracja: "Restauracja",
-  finanse: "Finanse",
-  "narzędzia": "Narzędzia",
-  infrastruktura: "Infrastruktura",
-};
-
-function groupAppsByCategory(apps: MatrixApp[]): { category: string; label: string; apps: MatrixApp[] }[] {
-  const map = new Map<string, MatrixApp[]>();
-  for (const app of apps) {
-    const cat = app.category ?? "inne";
-    if (!map.has(cat)) map.set(cat, []);
-    map.get(cat)!.push(app);
-  }
-  const ordered = CATEGORY_ORDER.filter((c) => map.has(c));
-  const extra = [...map.keys()].filter((c) => !CATEGORY_ORDER.includes(c));
-  return [...ordered, ...extra].map((cat) => ({
-    category: cat,
-    label: CATEGORY_LABELS[cat] ?? cat,
-    apps: map.get(cat)!,
-  }));
-}
-
-function countAccess(row: MatrixRow, apps: MatrixApp[]): { has: number; total: number } {
-  let has = 0;
-  for (const app of apps) {
-    if (row.access[app.id]) has++;
-  }
-  return { has, total: apps.length };
-}
-
-function Initials({ name }: { name: string }) {
-  const initials = name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("");
-  return (
-    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-semibold text-accent">
-      {initials || "?"}
-    </div>
-  );
-}
-
-function RoleBadge({ row }: { row: MatrixRow }) {
-  if (row.isService) {
-    return (
-      <span className="rounded-md bg-surface-strong px-2 py-0.5 text-[10px] font-semibold text-muted">
-        Serwis
-      </span>
-    );
-  }
-  if (row.isAdmin) {
-    return (
-      <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
-        Admin
-      </span>
-    );
-  }
-  return (
-    <span className="rounded-md bg-surface-strong px-2 py-0.5 text-[10px] font-semibold text-muted">
-      User
-    </span>
-  );
-}
-
-function AccessDetail({ row, apps }: { row: MatrixRow; apps: MatrixApp[] }) {
-  const groups = groupAppsByCategory(apps);
-
-  const hasAccess: { category: string; label: string; apps: MatrixApp[] }[] = [];
-  const noAccess: { category: string; label: string; apps: MatrixApp[] }[] = [];
-
-  for (const group of groups) {
-    const yes = group.apps.filter((a) => row.access[a.id]);
-    const no = group.apps.filter((a) => !row.access[a.id]);
-    if (yes.length > 0) hasAccess.push({ ...group, apps: yes });
-    if (no.length > 0) noAccess.push({ ...group, apps: no });
-  }
-
-  return (
-    <div className="flex flex-col gap-5">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Initials name={row.displayName || row.username} />
-        <div>
-          <p className="text-sm font-semibold text-foreground">{row.displayName || row.username}</p>
-          {row.displayName && <p className="text-xs text-muted">{row.username}</p>}
-        </div>
-        <RoleBadge row={row} />
-      </div>
-
-      {/* Ma dostęp */}
-      <section>
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-          Ma dostęp ({hasAccess.reduce((s, g) => s + g.apps.length, 0)})
-        </h3>
-        {hasAccess.length === 0 ? (
-          <p className="text-xs text-muted">Brak dostępu do żadnej aplikacji.</p>
-        ) : (
-          <div className="flex flex-col gap-2.5">
-            {hasAccess.map((group) => (
-              <div key={group.category}>
-                <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted">{group.label}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {group.apps.map((app) => (
-                    <span
-                      key={app.id}
-                      className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
-                    >
-                      {app.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Brak dostępu */}
-      <section>
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
-          Brak dostępu ({noAccess.reduce((s, g) => s + g.apps.length, 0)})
-        </h3>
-        {noAccess.length === 0 ? (
-          <p className="text-xs text-muted">Ma dostęp do wszystkich aplikacji.</p>
-        ) : (
-          <div className="flex flex-col gap-2.5">
-            {noAccess.map((group) => (
-              <div key={group.category}>
-                <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted/60">{group.label}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {group.apps.map((app) => (
-                    <span
-                      key={app.id}
-                      className="rounded-md bg-surface-strong px-2 py-0.5 text-xs font-medium text-muted"
-                    >
-                      {app.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
-  );
-}
+import type { MatrixResponse } from "@/src/types/api";
 
 export default function MatrixPage() {
   const router = useRouter();
@@ -362,7 +215,7 @@ export default function MatrixPage() {
               </button>
 
               {selectedRow ? (
-                <AccessDetail row={selectedRow} apps={matrix.apps} />
+                <MatrixAccessDetail row={selectedRow} apps={matrix.apps} />
               ) : (
                 <div className="flex flex-1 items-center justify-center text-sm text-muted">
                   Wybierz użytkownika z listy

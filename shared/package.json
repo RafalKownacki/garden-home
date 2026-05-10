@@ -1,5 +1,10 @@
 {
   "name": "garden-home-shared",
+  "version": "0.1.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "exports": {
+    "./app-types": "./app-types.ts",
+    "./lesson-types": "./lesson-types.ts"
+  }
 }

@@ -1,8 +1,6 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import {
-  type AppAccessRule,
-  type AppAccessSyncConfig,
   type AppManifest,
   type AppRegistrationRecord,
   type AppRegistryEntry,
@@ -11,6 +9,7 @@ import {
 import { appRegistry } from "../../../shared/app-registry.js";
 import { appRegistryOverrides } from "../../../shared/app-registry-overrides.js";
 import { config } from "../config.js";
+import { normalizeStoredRegistrationRecord } from "./registry-validation.js";
 
 const DATA_DIR = path.resolve(config.rootDir, "data");
 const REGISTRY_FILE = path.join(DATA_DIR, "app-registry.json");
@@ -24,57 +23,6 @@ const overrideMap = new Map<string, AppRegistryOverride>(
 
 async function ensureDataDir(): Promise<void> {
   await mkdir(DATA_DIR, { recursive: true });
-}
-
-function isAccessRule(rule: unknown): rule is AppAccessRule {
-  if (!rule || typeof rule !== "object") return false;
-  const r = rule as Record<string, unknown>;
-  if (r.source === "authenticated") return true;
-  if (r.source === "realm") {
-    return Array.isArray(r.anyRoles) && r.anyRoles.every((item) => typeof item === "string");
-  }
-  if (r.source === "client") {
-    return (
-      typeof r.clientId === "string" &&
-      r.clientId.length > 0 &&
-      Array.isArray(r.anyRoles) &&
-      r.anyRoles.every((item) => typeof item === "string")
-    );
-  }
-  return false;
-}
-
-function isAccessSyncConfig(value: unknown): value is AppAccessSyncConfig {
-  if (!value || typeof value !== "object") return false;
-  const v = value as Record<string, unknown>;
-  return v.mode === "pull_snapshot_v1" && typeof v.url === "string" && /^https:\/\//.test(v.url);
-}
-
-function normalizeRecord(input: unknown): AppRegistrationRecord | null {
-  if (!input || typeof input !== "object") return null;
-  const row = input as Record<string, unknown>;
-
-  if (
-    typeof row.id !== "string" ||
-    typeof row.name !== "string" ||
-    typeof row.description !== "string" ||
-    typeof row.url !== "string" ||
-    row.environment !== "prod"
-  ) {
-    return null;
-  }
-
-  return {
-    id: row.id,
-    name: row.name.trim(),
-    description: row.description,
-    url: row.url,
-    environment: "prod",
-    category: typeof row.category === "string" ? row.category : undefined,
-    access: Array.isArray(row.access) ? row.access.filter(isAccessRule) : undefined,
-    accessSync: isAccessSyncConfig(row.accessSync) ? row.accessSync : undefined,
-    lastRegisteredAt: typeof row.lastRegisteredAt === "string" ? row.lastRegisteredAt : undefined,
-  };
 }
 
 function mergeRecord(
@@ -108,7 +56,7 @@ async function loadRegistrationRecords(): Promise<AppRegistrationRecord[]> {
     const parsed = JSON.parse(raw) as unknown[];
     const normalized = Array.isArray(parsed)
       ? parsed
-          .map(normalizeRecord)
+          .map(normalizeStoredRegistrationRecord)
           .filter((record): record is AppRegistrationRecord => record !== null)
       : [];
     const now = new Date().toISOString();

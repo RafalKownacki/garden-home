@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "garden-home-shared": "file:../shared",
     "keycloak-js": "^26.2.3",
     "next": "16.2.0",
     "react": "19.2.4",
