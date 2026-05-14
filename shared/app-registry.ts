@@ -64,6 +64,11 @@ export const appRegistry: AppManifest[] = [
       { source: "realm", anyRoles: ["admin"] },
       {
         source: "client",
+        clientId: "beo-app",
+        anyRoles: ["admin", "manager", "reception", "catering", "restaurant", "viewer"],
+      },
+      {
+        source: "client",
         clientId: "system-rezerwacji-app",
         anyRoles: ["admin", "manager", "reception", "catering", "restaurant", "viewer"],
       },
